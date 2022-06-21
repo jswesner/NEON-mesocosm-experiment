@@ -2,6 +2,7 @@ library(tidyverse)
 library(googledrive)
 library(lubridate)
 library(ggthemes)
+library(janitor)
 
 #download latest data
 drive_download("NEON mesocosm study 2022/temperature",
@@ -23,6 +24,7 @@ temperature %>%
   left_join(heaters) %>% 
   clean_names() %>% 
   filter(!is.na(o2_do_mg_l)) %>% 
+  mutate(temp_deg_ysi = case_when(is.na(temp_from_ysi_deg_c) ~ temp_deg_c, TRUE ~ temp_from_ysi_deg_c)) %>% 
   select(tank, date_time, o2_do_mg_l, temp_deg_c) %>% 
   write_csv(file = "data/o2_temp.csv")
 
@@ -72,22 +74,14 @@ temperature %>%
 
 
 
-# Save O2_temp ------------------------------------------------------------
-library(janitor)
+# Plot O2_temp ------------------------------------------------------------
+
 temperature %>%
   select(-heater) %>% 
   left_join(heaters) %>% 
   clean_names() %>% 
   filter(!is.na(o2_do_mg_l)) %>% 
-  ggplot(aes(y = o2_do_mg_l, x = date_time, color = heater)) +
+  ggplot(aes(y = o2_do_mg_l, x = date_time)) +
   geom_point() + 
   geom_line(aes(group = tank))
 
-
-temperature %>%
-  select(-heater) %>% 
-  left_join(heaters) %>% 
-  clean_names() %>% 
-  filter(!is.na(o2_do_mg_l)) %>% 
-  select(tank, date_time, o2_do_mg_l, temp_deg_c) %>% 
-  write_csv(file = "data/o2_temp.csv")
