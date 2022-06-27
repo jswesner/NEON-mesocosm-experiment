@@ -1,0 +1,194 @@
+---
+title: "GPP report"
+date: '`r Sys.Date()`'
+output: html_document
+bibliography: refs.bib
+link-citations: no
+link-color: grey
+csl: ecology.csl
+---
+
+```{r initiate, include = TRUE, echo = FALSE, message=FALSE, warning=FALSE}
+
+knitr::opts_chunk$set(echo = FALSE, message = FALSE, warning = FALSE)
+
+library(plyr)
+library(dplyr)
+library(magrittr)
+library(ggplot2)
+source("./code/metabolism_functions.R")
+theme_set(theme_minimal())
+```
+
+# GPP report 
+
+```{r import data}
+o2_data = read.csv(file = "./data/o2_temp.csv", TRUE) %>%
+  dplyr::mutate(date_time = as.POSIXct(date_time, format = "%Y-%m-%dT%H:%M:%SZ"),
+                # calculate the DO percent saturation
+                o2_do_pct_sat = streamMetabolizer::calc_DO_sat(temp.water = temp_deg_c,
+                                                               pressure.air = (28.96/0.029530)))
+
+# import experimental design metadata 
+
+meta_data = read.csv(file = "./data/treatments.csv", TRUE)
+
+# 
+
+exp_data = o2_data %>%
+  left_join(meta_data %>%
+              dplyr::select(tank, temp_treat, nutrient_treat), by = "tank")
+```
+
+A quick look at the dissolved oxygen profiles for each of the tanks. Clear diurnal patterns and obvious variation among tanks.
+
+```{r DO profiles}
+
+exp_data %>%
+  ggplot(aes(x = date_time, y = o2_do_mg_l))+
+  geom_point(aes(color = temp_treat), size = 1.1)+
+  geom_line(aes(linetype = nutrient_treat))+
+  scale_x_datetime(date_breaks = "8 hours", date_labels = "%B-%d %H:00")+
+  scale_color_manual(values = c("blue","red"))+
+  scale_linetype_manual(values = c("solid","dotted"))+
+  facet_wrap(~tank)+
+  theme(axis.text.x = element_text(angle = 45, hjust = 1, vjust = 1))
+
+```
+
+We estimated GPP, NPP, and ER based on the dawn-dusk-dawn O~2~ measurements. The calculations were taken from @kritzberg2014 and can be summed up as:
+
+$$ GPP = NPP + ER $$
+
+$$ NPP = DO_{day2} - DO_{day1} $$
+
+$$ ER = DO_{day1_{night}} - DO_{day2_{morning}} $$
+
+Essentially, NPP is estimated by the difference in morning O~2~ from the first to second day. ER is estimated as the loss of O~2~ between dusk and dawn and is assumed to be constant (a tenuous assumption which we may need to address). GPP is the sum of NPP and ER. All measures are standardized to mg O~2~ L^-1^ hr^-1^. 
+
+Some quick boxplots to observe the patterns among temperature and nutrient treatments.
+
+```{r dusk-dawn metab estimates}
+
+# estimate patterns of GP, NP, and R
+exp_dataList = exp_data %>%
+  named_group_split(tank)
+
+# debugonce(estimateDuskDawn)
+dusk_dawnMetEstimates = lapply(exp_dataList, function(x) estimateDuskDawn(x)) %>%
+  bind_rows(.id = 'tank') %>%
+  left_join(meta_data %>%
+              dplyr::select(tank, temp_treat, nutrient_treat) %>%
+              dplyr::mutate(tank = as.character(tank)), by = "tank")
+```
+
+First up is gross production. Some interesting interactions seem to be happening in the heated nutrient treatments. Seemingly, nutrient addition have in inhibitory effect on total production. It will be interesting to see how this plays out in future measurements.
+
+```{r gpp boxplots}
+# create boxplot of Gross production
+dusk_dawnMetEstimates %>%
+  ggplot()+
+  geom_boxplot(aes(x = temp_treat, y = GP_mg_o2_l_hr, fill = nutrient_treat))+
+  scale_x_discrete(name = "Temperature treatment")+
+  scale_y_continuous(name = expression("Gross production ( mg"~O[2]~L^-1~hr^-1~")"),
+                     limits = c(0, NA), expand = c(0.01,0.01))+
+  geom_hline(aes(yintercept = 0))+
+  theme(legend.position = c(1,1),
+        legend.justification = c(1,1))
+```
+
+Next, the ER estimates (measured as O~2~ consumption) mostly mirror the GPP patterns and suggest lower (less negative) rates of respiration in the heated nutrient addition treatments. 
+
+```{r er boxplots}
+# create boxplot of 
+dusk_dawnMetEstimates %>%
+  ggplot()+
+  geom_boxplot(aes(x = temp_treat, y = Rnight_mg_o2_l_hr, fill = nutrient_treat))+
+  scale_x_discrete(name = "Temperature treatment")+
+  scale_y_continuous(name = expression("Respiration ( mg"~O[2]~L^-1~hr^-1~")"),
+                     limits = c(NA, 0), expand = c(0.01,0.01))+
+  geom_hline(aes(yintercept = 0))+
+  theme(legend.position = c(1,1),
+        legend.justification = c(1,1))
+```
+
+Our estimates of net production, a proxy of biomass accumulation in the mesocosms, shows a pattern opposite what I would predict. Namely, NPP decreases with warming and nutrient additions. Initial thoughts on this is that it could arise if warming and nutrient additions are revving up the heterotrophic pathways. Ultimately, the systems are 'closed', so ER is limited by GPP and GPP may be limited by biomass--essentially the hi temp-hi nüts treatments are substrate limited in both the production and respiration sides of the equation. 
+
+```{r np boxplots}
+
+# create boxplot of 
+dusk_dawnMetEstimates %>%
+  ggplot()+
+  geom_boxplot(aes(x = temp_treat, y = NP_mg_o2_l_hr, fill = nutrient_treat)) +
+  scale_x_discrete(name = "Temperature treatment")+
+  scale_y_continuous(name = expression("Net production ( mg"~O[2]~L^-1~hr^-1~")"),
+                     expand = c(0.01,0.01))+
+  geom_hline(aes(yintercept = 0))+
+  theme(legend.position = c(1,1),
+        legend.justification = c(1,1))
+```
+
+The GPP:ER ratio shows the extent to which these systems may be accumulating biomass (the should mirror closely the relative patterns of NPP). Values above 1 represent systems that fix more C than they respire, and values below 1 respire more C than they fix. Unsurprisingly, the mesocosms are almost entirely above 1 since they are pretty close to blank slates and respiration is dependent on C fixed locally.
+
+```{r NEP estimates}
+dusk_dawnMetEstimates %>%
+  ggplot()+
+  geom_boxplot(aes(x = temp_treat, y = (GP_mg_o2_l_hr/abs(Rnight_mg_o2_l_hr)), fill = nutrient_treat))+
+  scale_x_discrete(name = "Temperature treatment")+
+  scale_y_continuous(name = expression("GPP:ER"),
+                     limits = c(0.5,NA),expand = c(0.01,0.01))+
+  geom_hline(aes(yintercept = 1))+
+  theme(legend.position = c(1,1),
+        legend.justification = c(1,1))
+```
+
+```{r GPP-ER scatter}
+# scatter plot of GP & R
+dusk_dawnMetEstimates %>%
+  ggplot()+
+  geom_point(aes(x = GP_mg_o2_l_hr, y = abs(Rnight_mg_o2_l_hr), color = temp_treat, fill = nutrient_treat), shape = 21, size =3, stroke = 1.3)+
+  geom_abline()+
+  geom_smooth(aes(x = GP_mg_o2_l_hr, y = abs(Rnight_mg_o2_l_hr)), method = 'lm', se = FALSE)+
+  scale_y_continuous(name = expression("Respiration ( -mg"~O[2]~L^-1~hr^-1~")"),
+                     limits = c(0,NA), expand = c(0.01,0.01))+
+  scale_x_continuous(name = expression("Gross production ( mg"~O[2]~L^-1~hr^-1~")"),
+                     limits = c(0,NA), expand = c(0.01,0.01))+
+  scale_color_manual(values = c("blue","red"))+
+  scale_fill_manual(values = c("blue","red"))
+
+```
+
+When we look at Net production and ER, there is no clear relationship.
+
+```{r NPP-ER scatter}
+# scatter plot of GP & R
+dusk_dawnMetEstimates %>%
+  ggplot()+
+  geom_point(aes(x = NP_mg_o2_l_hr, y = abs(Rnight_mg_o2_l_hr), color = temp_treat, fill = nutrient_treat), shape = 21, size =3, stroke = 1.3)+
+  geom_abline()+
+  geom_smooth(aes(x = NP_mg_o2_l_hr, y = abs(Rnight_mg_o2_l_hr)), method = 'lm', se = FALSE, linetype = 'dotted')+
+  scale_y_continuous(name = expression("Respiration ( -mg"~O[2]~L^-1~hr^-1~")"),
+                     limits = c(0,NA), expand = c(0.01,0.01))+
+  scale_x_continuous(name = expression("Net production ( mg"~O[2]~L^-1~hr^-1~")"),
+                     limits = c(0,NA), expand = c(0.01,0.01))+
+  scale_color_manual(values = c("blue","red"))+
+  scale_fill_manual(values = c("blue","red"))
+```
+
+## Takeaways
+
+My initial takeaways from this are the data are a bit puzzling. Somethings make a lot of sense: 1) tight relationships between GPP and ER, 2) GPP:ER ~~ 1 so they are pretty much in carbon balance, with just slightly higher production.
+
+There are a number of things that throw me a loop: 1) The relative patterns in NPP are opposite of what I would predict, which I touched on a bit above.
+
+## Next steps
+
+I am going to calculate metabolism based on the entire diel O~2~ cycle rather than the three time points. This include estimating air-water exchange. It is possible this term is more important than we assumed and we are underestimating fluxes in the warmed mesocosms. If the air-water flux is large and the underestimation is systematic with productivity, this could account for the opposing relative patterns in NPP estimates across treatments.
+
+Or, as I noted earlier, it could be that the warming and nutrient additions are really stimulating the breakdown of C and there is a super tight C cycle going down. 
+
+Jeff--how does this jive with the initial patterns you are seeing in emergence? Do the heated+/nutrient+ tanks have lower emergence? 
+
+Would love to hear y'all's thoughts or questions on any of this.
+
+# References
