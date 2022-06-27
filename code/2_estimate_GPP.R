@@ -3,12 +3,13 @@ library(plyr)
 library(dplyr)
 library(magrittr)
 library(ggplot2)
-library(rnoaa)
-library(rwunderground)
+source("./code/metabolism_functions.R")
+# library(rnoaa)
+# library(rwunderground)
 theme_set(theme_minimal())
 # import oxygen data 
 o2_data = read.csv(file = "./data/o2_temp.csv", TRUE) %>%
-  dplyr::mutate(date_time = as.POSIXct(date_time, format = "%Y-%m-%dT%H:%M:%SZ", tz= "America/Chicago"),
+  dplyr::mutate(date_time = as.POSIXct(date_time, format = "%Y-%m-%dT%H:%M:%SZ"),
                 # calculate the DO percent saturation
                 o2_do_pct_sat = streamMetabolizer::calc_DO_sat(temp.water = temp_deg_c,
                                                                pressure.air = (28.96/0.029530)))
@@ -22,34 +23,6 @@ meta_data = read.csv(file = "./data/treatments.csv", TRUE)
 exp_data = o2_data %>%
   left_join(meta_data %>%
               dplyr::select(tank, temp_treat, nutrient_treat), by = "tank")
-
-estimateDuskDawn = function(df = NULL,...){
-  require(plyr)
-  require(dplyr)
-  require(magrittr)
-  
-  date_timeCol = names(df[sapply(df, function(x) inherits(x, "POSIXt"))])
-  dayCol = names(df[sapply(df, function(x) inherits(x, "difftime"))])
-  day = 'day'
-  
-  df = df %>% ungroup %>%
-    dplyr::mutate(!!day := as.integer(julian(!!as.symbol(date_timeCol)) - min(julian(!!as.symbol(date_timeCol)))+1),
-                  TOD = case_when(lubridate::hour(!!as.symbol(date_timeCol)) < 12 ~ "morning",
-                                  TRUE ~ "evening")) %>%
-    group_by(day, TOD) %>%
-    dplyr::arrange(sort(!!as.symbol(date_timeCol))) %>%
-    dplyr::mutate(time_point = 1:n())
-  
-  # test that >1 day of data exist for mornings
-  if(length(unique(df[which(grepl("morning",df[["TOD"]])),dayCol])) <= 1) stop("GPP calculations require >1 day of oxygen measurements")
-  
-  # Calculate NP
-  
-    
-}
-debugonce(estimateDuskDawn)
-estimateDuskDawn(exp_data %>% filter(tank == 1))
-
 
 exp_data %>%
   ggplot(aes(x = date_time, y = o2_do_mg_l))+
@@ -71,14 +44,69 @@ exp_data %>%
   facet_wrap(~tank)+
   theme(axis.text.x = element_text(angle = 45, hjust = 1, vjust = 1))
 
-exp_data %>% 
-  group_by(temp_treat, nutrient_treat) %>%
-  dplyr::summarise(max_o2 = max(o2_do_mg_l, na.rm = TRUE),
-                   min_o2 = min(o2_do_mg_l, na.rm = TRUE)) %>%
+# estimate patterns of GP, NP, and R
+exp_dataList = exp_data %>%
+  named_group_split(tank)
+
+# debugonce(estimateDuskDawn)
+dusk_dawnMetEstimates = lapply(exp_dataList, function(x) estimateDuskDawn(x)) %>%
+  bind_rows(.id = 'tank') %>%
+  left_join(meta_data %>%
+              dplyr::select(tank, temp_treat, nutrient_treat) %>%
+              dplyr::mutate(tank = as.character(tank)), by = "tank")
+
+# create boxplot of 
+dusk_dawnMetEstimates %>%
   ggplot()+
-  geom_boxplot(aes(x = temp_treat, y = max_o2, group = nutrient_treat))
+  geom_boxplot(aes(x = temp_treat, y = NP_mg_o2_l_hr, fill = nutrient_treat)) +
+  scale_x_discrete(name = "Temperature treatment")+
+  scale_y_continuous(name = expression("Net production ( mg"~O[2]~L^-1~hr^-1~")"),
+                     expand = c(0.01,0.01))+
+  theme(legend.position = c(1,1),
+        legend.justification = c(1,1))
 
+# create boxplot of 
+dusk_dawnMetEstimates %>%
+  ggplot()+
+  geom_boxplot(aes(x = temp_treat, y = Rnight_mg_o2_l_hr, fill = nutrient_treat))+
+  scale_x_discrete(name = "Temperature treatment")+
+  scale_y_continuous(name = expression("Respiration ( mg"~O[2]~L^-1~hr^-1~")"),
+                     limits = c(NA, 0), expand = c(0.01,0.01))+
+  theme(legend.position = c(1,1),
+        legend.justification = c(1,1))
 
+# create boxplot of 
+dusk_dawnMetEstimates %>%
+  ggplot()+
+  geom_boxplot(aes(x = temp_treat, y = GP_mg_o2_l_hr, fill = nutrient_treat))+
+  scale_x_discrete(name = "Temperature treatment")+
+  scale_y_continuous(name = expression("Gross production ( mg"~O[2]~L^-1~hr^-1~")"),
+                     limits = c(0, NA), expand = c(0.01,0.01))+
+  theme(legend.position = c(1,1),
+        legend.justification = c(1,1))
+
+dusk_dawnMetEstimates %>%
+  ggplot()+
+  geom_boxplot(aes(x = temp_treat, y = (GP_mg_o2_l_hr/abs(Rnight_mg_o2_l_hr)), fill = nutrient_treat))+
+  scale_x_discrete(name = "Temperature treatment")+
+  scale_y_continuous(name = expression("GPP:ER"),
+                     limits = c(0.5,NA),expand = c(0.01,0.01))+
+  geom_hline(aes(yintercept = 1))+
+  theme(legend.position = c(1,1),
+        legend.justification = c(1,1))
+
+# scatter plot of GP & R
+dusk_dawnMetEstimates %>%
+  ggplot()+
+  geom_point(aes(x = GP_mg_o2_l_hr, y = abs(Rnight_mg_o2_l_hr), color = temp_treat, fill = nutrient_treat), shape = 21, size =3, stroke = 1.3)+
+  geom_abline()+
+  geom_smooth(aes(x = GP_mg_o2_l_hr, y = abs(Rnight_mg_o2_l_hr)), method = 'lm', se = FALSE)+
+  scale_y_continuous(name = expression("Respiration ( -mg"~O[2]~L^-1~hr^-1~")"),
+                     limits = c(0,NA), expand = c(0.01,0.01))+
+  scale_x_continuous(name = expression("Gross production ( mg"~O[2]~L^-1~hr^-1~")"),
+                     limits = c(0,NA), expand = c(0.01,0.01))+
+  scale_color_manual(values = c("blue","red"))+
+  scale_fill_manual(values = c("blue","red"))
 
 #### Spare(d) code ####
 # get background air pressure
