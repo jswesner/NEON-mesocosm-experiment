@@ -1,7 +1,10 @@
 ---
 title: "GPP report"
 date: '`r Sys.Date()`'
-output: html_document
+output: 
+  pdf_document:
+    keep_tex: true
+  html_document:
 bibliography: refs.bib
 link-citations: no
 link-color: grey
