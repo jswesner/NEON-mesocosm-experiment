@@ -72,12 +72,14 @@ temperature %>%
 
 
 # Plot O2_temp ------------------------------------------------------------
-
+library(ggthemes)
+library(viridis)
 temperature %>%
   clean_names() %>% 
   filter(!is.na(o2_do_mg_l)) %>% 
   ggplot(aes(y = o2_do_mg_l, x = date_time)) +
-  geom_point(aes(color = nutrient_treat)) + 
-  geom_line(aes(group = tank, color = nutrient_treat)) + 
-  facet_grid(temp_treat ~ row)
+  geom_point(aes(color = treatment)) + 
+  geom_line(aes(group = tank, color = treatment)) +
+  facet_wrap(~treatment)
+  
 
