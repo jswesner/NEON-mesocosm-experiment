@@ -3,5 +3,9 @@
 .RData
 .Ruserdata
 
+# ignore damn googleDrive sync files
+**/desktop.ini
+
 #ignore GAM models in data folder
 data/models/
+

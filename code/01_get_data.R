@@ -3,7 +3,8 @@ library(googledrive)
 library(lubridate)
 library(ggthemes)
 library(janitor)
-
+library(LakeMetabolizer)
+library(streamMetabolizer)
 #download latest data
 drive_download("NEON mesocosm study 2022/temperature",
                path = "data/temperature.csv",
@@ -18,6 +19,8 @@ temperature <- read_csv("data/temperature.csv") %>%
   select(-heater) %>% 
   left_join(treatments) %>% 
   mutate(temp_deg_ysi = case_when(is.na(temp_from_ysi_deg_c) ~ temp_deg_c, TRUE ~ temp_from_ysi_deg_c)) 
+
+site_coords = c(42.800489,-96.926772)
 
 
 

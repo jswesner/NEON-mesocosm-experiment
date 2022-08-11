@@ -33,13 +33,6 @@
   \KOMAoptions{parskip=half}}
 \makeatother
 \usepackage{xcolor}
-\IfFileExists{xurl.sty}{\usepackage{xurl}}{} % add URL line breaks if available
-\IfFileExists{bookmark.sty}{\usepackage{bookmark}}{\usepackage{hyperref}}
-\hypersetup{
-  pdftitle={GPP report},
-  hidelinks,
-  pdfcreator={LaTeX via pandoc}}
-\urlstyle{same} % disable monospaced font for URLs
 \usepackage[margin=1in]{geometry}
 \usepackage{graphicx}
 \makeatletter
@@ -84,10 +77,17 @@
 \ifLuaTeX
   \usepackage{selnolig}  % disable illegal ligatures
 \fi
+\IfFileExists{bookmark.sty}{\usepackage{bookmark}}{\usepackage{hyperref}}
+\IfFileExists{xurl.sty}{\usepackage{xurl}}{} % add URL line breaks if available
+\urlstyle{same} % disable monospaced font for URLs
+\hypersetup{
+  pdftitle={GPP report},
+  hidelinks,
+  pdfcreator={LaTeX via pandoc}}
 
 \title{GPP report}
 \author{}
-\date{\vspace{-2.5em}2022-06-27}
+\date{\vspace{-2.5em}2022-08-05}
 
 \begin{document}
 \maketitle
@@ -159,6 +159,57 @@ locally.
 When we look at Net production and ER, there is no clear relationship.
 
 \includegraphics{GPP-report_files/figure-latex/NPP-ER scatter-1.pdf}
+
+\hypertarget{metabolisms-estimates-from-modeled-continouous-o2-series}{%
+\subsection{Metabolisms estimates from modeled continouous o2
+series}\label{metabolisms-estimates-from-modeled-continouous-o2-series}}
+
+Here we can use the time series to model the estimated diel signal in o2
+and temperature and then, with a few assumptions, we can further
+estimate air-water exchange and GPP, ER, and NEP.
+
+Similar plots to above, GPP, ER, NEP and GPP-ER relationships
+
+\includegraphics{GPP-report_files/figure-latex/cont gpp boxplots-1.pdf}
+
+Next, the ER estimates (measured as O\textsubscript{2} consumption)
+mostly mirror the GPP patterns and suggest lower (less negative) rates
+of respiration in the heated nutrient addition treatments.
+
+\includegraphics{GPP-report_files/figure-latex/cont er boxplots-1.pdf}
+
+Our estimates of net production, a proxy of biomass accumulation in the
+mesocosms, shows a pattern opposite what I would predict. Namely, NPP
+decreases with warming and nutrient additions. Initial thoughts on this
+is that it could arise if warming and nutrient additions are revving up
+the heterotrophic pathways. Ultimately, the systems are `closed', so ER
+is limited by GPP and GPP may be limited by biomass--essentially the hi
+temp-hi nüts treatments are substrate limited in both the production and
+respiration sides of the equation.
+
+\includegraphics{GPP-report_files/figure-latex/cont np boxplots-1.pdf}
+
+The GPP:ER ratio shows the extent to which these systems may be
+accumulating biomass (the should mirror closely the relative patterns of
+NPP). Values above 1 represent systems that fix more C than they
+respire, and values below 1 respire more C than they fix.
+Unsurprisingly, the mesocosms are almost entirely above 1 since they are
+pretty close to blank slates and respiration is dependent on C fixed
+locally.
+
+\includegraphics{GPP-report_files/figure-latex/cont NEP estimates-1.pdf}
+
+\includegraphics{GPP-report_files/figure-latex/contGPP-ER scatter-1.pdf}
+
+When we look at Net production and ER, there is no clear relationship.
+
+\includegraphics{GPP-report_files/figure-latex/cont NPP-ER scatter-1.pdf}
+
+\hypertarget{compare-dawn-dusk-and-continous-methods}{%
+\subsubsection{Compare Dawn-Dusk and continous
+methods}\label{compare-dawn-dusk-and-continous-methods}}
+
+\includegraphics{GPP-report_files/figure-latex/comb DD and Cont-1.pdf}
 
 \hypertarget{takeaways}{%
 \subsection{Takeaways}\label{takeaways}}

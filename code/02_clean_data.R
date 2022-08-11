@@ -65,4 +65,8 @@ exp_data = o2_data %>%
   left_join(meta_data %>%
               dplyr::select(tank, temp_treat, nutrient_treat), by = "tank")
 
-rm(list = ls()[ls() %ni% c("exp_data", "grp1_dates","grp2_dates", ls.str(mode = 'function'))])
+exp_metadata = exp_data %>%
+  group_by(tank) %>%
+  dplyr::summarise(across(c(temp_treat, nutrient_treat), ~unique(.x)))
+
+rm(list = ls()[ls() %ni% c("exp_data", "exp_metadata", "site_coords", ls.str(mode = 'function'))])

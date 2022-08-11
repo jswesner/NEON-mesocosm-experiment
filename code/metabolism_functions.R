@@ -77,6 +77,66 @@ GP_mg_o2_l_hr = NP_mg_o2_l_hr + (abs(Rnight_mg_o2_l_hr))
 
 #'
 #'
+#'
+estimateContinuous = function(tankID = NULL,...){
+require(LakeMetabolizer)
+require(streamMetabolizer)
+# set variables for metadata
+site_coords = c(42.80049, -96.92677)
+runID = substr(tankID, nchar(tankID), nchar(tankID))
+# id the relevant file names
+o2File = list.files(path = "./data/models/", pattern = paste0("o2_GAM_",tankID,".rds"), full.names = TRUE)
+tempFile = list.files(path = "./data/models/", pattern = paste0("temp_GAM_",tankID,".rds"), full.names = TRUE)
+
+# read the files in
+o2Model = readRDS(o2File)
+tempModel = readRDS(tempFile)
+
+# make prediction DF
+
+modelTimes = with(o2Model$data,
+                  expand.grid(run_hr = seq(min(run_hr), max(run_hr), length = 100))) 
+
+modelDf = modelTimes %>%
+  bind_cols(predict(o2Model,
+                    modelTimes,
+                    se.fit = FALSE,
+                    type = 'response')) %>%
+  dplyr::select(run_hr, do_obs = 'Estimate') %>%
+  bind_cols(predict(tempModel,
+                    modelTimes,
+                    se.fit = FALSE,
+                    type = 'response')) %>%
+  dplyr::select(run_hr, do_obs, temp_obs = 'Estimate') %>%
+  dplyr::mutate(date_time = case_when(runID == 1 ~ as.POSIXct(run_hr*3600, origin = as.POSIXct("2022-06-21 05:30:00")),
+                                      runID == 2 ~ as.POSIXct(run_hr*3600, origin = as.POSIXct("2022-06-27 05:30:00"))),
+                solar_time = streamMetabolizer::calc_solar_time(date_time, longitude = site_coords[2]),
+                light = streamMetabolizer::calc_light(solar_time,
+                                                      latitude = site_coords[1],
+                                                      longitude = site_coords[2]),
+                do_sat = calc_DO_sat(temp_obs,
+                                     pressure.air = (28.96/0.029530)),
+                K600 = k.cole(data.frame(datetime = solar_time,
+                                         wnd = wind.scale.base(1,1)))[['k600']],
+                k_gas = k600.2.kGAS.base(k600 = K600, temp_obs, gas = "O2"), 
+                z_mix = 0.3) %>%
+  dplyr::mutate(across(matches('do_obs'), ~ifelse(.x <=0,0.01,.x))) %>%
+  dplyr::select(date_time, do_obs, temp_obs, do_sat, light, k_gas, z_mix )
+
+bayes.res = metab.bayesian(do.obs = modelDf[['do_obs']],
+                           do.sat = modelDf[['do_sat']],
+                           k.gas = modelDf[['k_gas']],
+                           z.mix = modelDf[['z_mix']],
+                           irr = modelDf[['light']],
+                           wtr = modelDf[['temp_obs']],
+                           datetime = modelDf[['date_time']])
+saveRDS(bayes.res, file = paste0("./data/models/metab_bayes_",tankID,".rds"))
+return(tankID = bayes.res)
+
+}
+
+#'
+#'
 # covariance matrix of outcomes
 cor_matrix <- function(x, r, v = rep(1, length(x)), na.rm = FALSE) {
   mat <- diag(v)
