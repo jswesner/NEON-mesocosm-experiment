@@ -1,7 +1,10 @@
 ---
 title: "GPP report"
 date: '`r Sys.Date()`'
-output: html_document
+output: 
+  pdf_document:
+    keep_tex: true
+  html_document:
 bibliography: refs.bib
 link-citations: no
 link-color: grey
@@ -17,27 +20,16 @@ library(dplyr)
 library(magrittr)
 library(ggplot2)
 source("./code/metabolism_functions.R")
+library(LakeMetabolizer)
+library(streamMetabolizer)
 theme_set(theme_minimal())
 ```
 
 # GPP report 
 
 ```{r import data}
-o2_data = read.csv(file = "./data/o2_temp.csv", TRUE) %>%
-  dplyr::mutate(date_time = as.POSIXct(date_time, format = "%Y-%m-%dT%H:%M:%SZ"),
-                # calculate the DO percent saturation
-                o2_do_pct_sat = streamMetabolizer::calc_DO_sat(temp.water = temp_deg_c,
-                                                               pressure.air = (28.96/0.029530)))
+source("./code/02_clean_data.R")
 
-# import experimental design metadata 
-
-meta_data = read.csv(file = "./data/treatments.csv", TRUE)
-
-# 
-
-exp_data = o2_data %>%
-  left_join(meta_data %>%
-              dplyr::select(tank, temp_treat, nutrient_treat), by = "tank")
 ```
 
 A quick look at the dissolved oxygen profiles for each of the tanks. Clear diurnal patterns and obvious variation among tanks.
@@ -72,12 +64,17 @@ Some quick boxplots to observe the patterns among temperature and nutrient treat
 
 # estimate patterns of GP, NP, and R
 exp_dataList = exp_data %>%
+  ungroup %>%
   named_group_split(tank)
 
-# debugonce(estimateDuskDawn)
-dusk_dawnMetEstimates = lapply(exp_dataList, function(x) estimateDuskDawn(x)) %>%
+# debug(estimateDuskDawn)
+dusk_dawnMetEstimates = exp_dataList %>%
+  purrr::map(~.x %>% named_group_split(run) %>%
+  purrr::map(~estimateDuskDawn(.x)) %>%
+    bind_rows(.id = 'run')) %>%
   bind_rows(.id = 'tank') %>%
-  left_join(meta_data %>%
+  left_join(exp_metadata %>%
+              ungroup %>%
               dplyr::select(tank, temp_treat, nutrient_treat) %>%
               dplyr::mutate(tank = as.character(tank)), by = "tank")
 ```
@@ -174,6 +171,147 @@ dusk_dawnMetEstimates %>%
   scale_color_manual(values = c("blue","red"))+
   scale_fill_manual(values = c("blue","red"))
 ```
+
+## Metabolisms estimates from modeled continouous o2 series
+
+Here we can use the time series to model the estimated diel signal in o2 and temperature and then, with a few assumptions, we can further estimate air-water exchange and GPP, ER, and NEP.
+
+```{r continuoues est}
+metabFiles = list.files("./data/models",".*bayes.*.rds", full.names = TRUE)
+extract_metab = function(metabModel = NULL,...){
+  tankID = gsub(".*_(\\w{1}\\d{1,2}_\\d{1}).rds","\\1",sapply(strsplit(metabModel, "/"),"[",length(unlist(strsplit(metabModel,"/")))))
+  x = readRDS(metabModel)
+  return(data.frame(tank = tankID,
+                    x$metab,
+                    x$metab.sd))
+}
+
+expMetab = metabFiles %>% purrr::map(~extract_metab(metabModel = .x)) %>%
+  bind_rows %>%
+  dplyr::mutate(tankMod = as.numeric(gsub("t(\\d{1,2})_\\d{1}","\\1", tank)),
+                run = gsub("t\\d{1,2}_(\\d{1})","\\1", tank)) %>%
+  dplyr::select(-tank) %>%
+  dplyr::rename(tank = 'tankMod', GPP_mg_o2_l_d = 'GPP', ER_mg_o2_l_d = 'R', NEP_mg_o2_l_d = 'NEP') %>%
+  left_join(exp_metadata, by ='tank')
+```
+
+Similar plots to above, GPP, ER, NEP and GPP-ER relationships
+
+```{r cont gpp boxplots}
+# create boxplot of Gross production
+expMetab %>%
+  ggplot()+
+  geom_boxplot(aes(x = temp_treat, y = GPP_mg_o2_l_d, fill = nutrient_treat))+
+  scale_x_discrete(name = "Temperature treatment")+
+  scale_y_continuous(name = expression("Gross production ( mg"~O[2]~L^-1~d^-1~")"),
+                     limits = c(0, NA), expand = c(0.01,0.01))+
+  geom_hline(aes(yintercept = 0))+
+  theme(legend.position = c(1,1),
+        legend.justification = c(1,1))
+```
+
+Next, the ER estimates (measured as O~2~ consumption) mostly mirror the GPP patterns and suggest lower (less negative) rates of respiration in the heated nutrient addition treatments. 
+
+```{r cont er boxplots}
+# create boxplot of 
+expMetab %>%
+  ggplot()+
+  geom_boxplot(aes(x = temp_treat, y = ER_mg_o2_l_d, fill = nutrient_treat))+
+  scale_x_discrete(name = "Temperature treatment")+
+  scale_y_continuous(name = expression("Respiration ( mg"~O[2]~L^-1~d^-1~")"),
+                     limits = c(NA, 0), expand = c(0.01,0.01))+
+  geom_hline(aes(yintercept = 0))+
+  theme(legend.position = c(1,1),
+        legend.justification = c(1,1))
+```
+
+Our estimates of net production, a proxy of biomass accumulation in the mesocosms, shows a pattern opposite what I would predict. Namely, NPP decreases with warming and nutrient additions. Initial thoughts on this is that it could arise if warming and nutrient additions are revving up the heterotrophic pathways. Ultimately, the systems are 'closed', so ER is limited by GPP and GPP may be limited by biomass--essentially the hi temp-hi nüts treatments are substrate limited in both the production and respiration sides of the equation. 
+
+```{r cont np boxplots}
+
+# create boxplot of 
+expMetab %>%
+  ggplot()+
+  geom_boxplot(aes(x = temp_treat, y = NEP_mg_o2_l_d, fill = nutrient_treat)) +
+  scale_x_discrete(name = "Temperature treatment")+
+  scale_y_continuous(name = expression("Net production ( mg"~O[2]~L^-1~d^-1~")"),
+                     expand = c(0.01,0.01))+
+  geom_hline(aes(yintercept = 0))+
+  theme(legend.position = c(1,1),
+        legend.justification = c(1,1))
+```
+
+The GPP:ER ratio shows the extent to which these systems may be accumulating biomass (the should mirror closely the relative patterns of NPP). Values above 1 represent systems that fix more C than they respire, and values below 1 respire more C than they fix. Unsurprisingly, the mesocosms are almost entirely above 1 since they are pretty close to blank slates and respiration is dependent on C fixed locally.
+
+```{r cont NEP estimates}
+expMetab %>%
+  ggplot()+
+  geom_boxplot(aes(x = temp_treat, y = (GPP_mg_o2_l_d/abs(ER_mg_o2_l_d)), fill = nutrient_treat))+
+  scale_x_discrete(name = "Temperature treatment")+
+  scale_y_continuous(name = expression("GPP:ER"),
+                     limits = c(0.5,NA),expand = c(0.01,0.01))+
+  geom_hline(aes(yintercept = 1))+
+  theme(legend.position = c(1,1),
+        legend.justification = c(1,1))
+```
+
+```{r contGPP-ER scatter}
+# scatter plot of GP & R
+expMetab %>%
+  ggplot()+
+  geom_point(aes(x = GPP_mg_o2_l_d, y = abs(ER_mg_o2_l_d), color = temp_treat, fill = nutrient_treat), shape = 21, size =3, stroke = 1.3)+
+  geom_abline()+
+  geom_smooth(aes(x = GPP_mg_o2_l_d, y = abs(ER_mg_o2_l_d)), method = 'lm', se = FALSE)+
+  scale_y_continuous(name = expression("Respiration ( -mg"~O[2]~L^-1~d^-1~")"),
+                     limits = c(0,NA), expand = c(0.01,0.01))+
+  scale_x_continuous(name = expression("Gross production ( mg"~O[2]~L^-1~d^-1~")"),
+                     limits = c(0,NA), expand = c(0.01,0.01))+
+  scale_color_manual(values = c("blue","red"))+
+  scale_fill_manual(values = c("blue","red"))
+
+```
+
+When we look at Net production and ER, there is no clear relationship.
+
+```{r cont NPP-ER scatter}
+# scatter plot of GP & R
+expMetab%>%
+  ggplot()+
+  geom_point(aes(x = NEP_mg_o2_l_d, y = abs(ER_mg_o2_l_d), color = temp_treat, fill = nutrient_treat), shape = 21, size =3, stroke = 1.3)+
+  geom_abline()+
+  geom_smooth(aes(x = NEP_mg_o2_l_d, y = abs(ER_mg_o2_l_d)), method = 'lm', se = FALSE, linetype = 'dotted')+
+  scale_y_continuous(name = expression("Respiration ( -mg"~O[2]~L^-1~d^-1~")"),
+                     limits = c(NA,NA), expand = c(0.01,0.01))+
+  scale_x_continuous(name = expression("Net production ( mg"~O[2]~L^-1~d^-1~")"),
+                     limits = c(0,NA), expand = c(0.01,0.01))+
+  scale_color_manual(values = c("blue","red"))+
+  scale_fill_manual(values = c("blue","red"))
+```
+
+### Compare Dawn-Dusk and continous methods
+
+```{r comb DD and Cont}
+fullMetab = expMetab %>%
+  dplyr::mutate(tank = as.character(tank),
+                run = paste0('run',run)) %>%
+  left_join(dusk_dawnMetEstimates %>% dplyr::select(-temp_treat, -nutrient_treat), by = c('tank', 'run'))
+
+
+
+fullMetab %>%
+  ggplot() + 
+  geom_point(aes(x = GPP_mg_o2_l_d, y = GP_mg_o2_l_hr*24, color = temp_treat, fill = nutrient_treat), shape = 21, size =3, stroke = 1.3) +
+  geom_abline()+
+  geom_smooth(aes(x = GPP_mg_o2_l_d, y = GP_mg_o2_l_hr*24), method = 'lm', se = FALSE, linetype = 'dotted')+
+  scale_y_continuous(name = expression("GPP ( -mg"~O[2]~L^-1~d^-1~"; Dawn-Dusk scaled to 24hr)"),
+                     limits = c(0,NA), expand = c(0.01,0.01))+
+  scale_x_continuous(name = expression("GPP production ( mg"~O[2]~L^-1~d^-1~"; Continuous)"),
+                     limits = c(0,NA), expand = c(0.01,0.01))+
+  scale_color_manual(values = c("blue","red"))+
+  scale_fill_manual(values = c("blue","red"))
+
+```
+
 
 ## Takeaways
 

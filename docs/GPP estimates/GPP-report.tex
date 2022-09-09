@@ -1,0 +1,261 @@
+% Options for packages loaded elsewhere
+\PassOptionsToPackage{unicode}{hyperref}
+\PassOptionsToPackage{hyphens}{url}
+%
+\documentclass[
+]{article}
+\usepackage{amsmath,amssymb}
+\usepackage{lmodern}
+\usepackage{iftex}
+\ifPDFTeX
+  \usepackage[T1]{fontenc}
+  \usepackage[utf8]{inputenc}
+  \usepackage{textcomp} % provide euro and other symbols
+\else % if luatex or xetex
+  \usepackage{unicode-math}
+  \defaultfontfeatures{Scale=MatchLowercase}
+  \defaultfontfeatures[\rmfamily]{Ligatures=TeX,Scale=1}
+\fi
+% Use upquote if available, for straight quotes in verbatim environments
+\IfFileExists{upquote.sty}{\usepackage{upquote}}{}
+\IfFileExists{microtype.sty}{% use microtype if available
+  \usepackage[]{microtype}
+  \UseMicrotypeSet[protrusion]{basicmath} % disable protrusion for tt fonts
+}{}
+\makeatletter
+\@ifundefined{KOMAClassName}{% if non-KOMA class
+  \IfFileExists{parskip.sty}{%
+    \usepackage{parskip}
+  }{% else
+    \setlength{\parindent}{0pt}
+    \setlength{\parskip}{6pt plus 2pt minus 1pt}}
+}{% if KOMA class
+  \KOMAoptions{parskip=half}}
+\makeatother
+\usepackage{xcolor}
+\usepackage[margin=1in]{geometry}
+\usepackage{graphicx}
+\makeatletter
+\def\maxwidth{\ifdim\Gin@nat@width>\linewidth\linewidth\else\Gin@nat@width\fi}
+\def\maxheight{\ifdim\Gin@nat@height>\textheight\textheight\else\Gin@nat@height\fi}
+\makeatother
+% Scale images if necessary, so that they will not overflow the page
+% margins by default, and it is still possible to overwrite the defaults
+% using explicit options in \includegraphics[width, height, ...]{}
+\setkeys{Gin}{width=\maxwidth,height=\maxheight,keepaspectratio}
+% Set default figure placement to htbp
+\makeatletter
+\def\fps@figure{htbp}
+\makeatother
+\setlength{\emergencystretch}{3em} % prevent overfull lines
+\providecommand{\tightlist}{%
+  \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+\setcounter{secnumdepth}{-\maxdimen} % remove section numbering
+\newlength{\cslhangindent}
+\setlength{\cslhangindent}{1.5em}
+\newlength{\csllabelwidth}
+\setlength{\csllabelwidth}{3em}
+\newlength{\cslentryspacingunit} % times entry-spacing
+\setlength{\cslentryspacingunit}{\parskip}
+\newenvironment{CSLReferences}[2] % #1 hanging-ident, #2 entry spacing
+ {% don't indent paragraphs
+  \setlength{\parindent}{0pt}
+  % turn on hanging indent if param 1 is 1
+  \ifodd #1
+  \let\oldpar\par
+  \def\par{\hangindent=\cslhangindent\oldpar}
+  \fi
+  % set entry spacing
+  \setlength{\parskip}{#2\cslentryspacingunit}
+ }%
+ {}
+\usepackage{calc}
+\newcommand{\CSLBlock}[1]{#1\hfill\break}
+\newcommand{\CSLLeftMargin}[1]{\parbox[t]{\csllabelwidth}{#1}}
+\newcommand{\CSLRightInline}[1]{\parbox[t]{\linewidth - \csllabelwidth}{#1}\break}
+\newcommand{\CSLIndent}[1]{\hspace{\cslhangindent}#1}
+\ifLuaTeX
+  \usepackage{selnolig}  % disable illegal ligatures
+\fi
+\IfFileExists{bookmark.sty}{\usepackage{bookmark}}{\usepackage{hyperref}}
+\IfFileExists{xurl.sty}{\usepackage{xurl}}{} % add URL line breaks if available
+\urlstyle{same} % disable monospaced font for URLs
+\hypersetup{
+  pdftitle={GPP report},
+  hidelinks,
+  pdfcreator={LaTeX via pandoc}}
+
+\title{GPP report}
+\author{}
+\date{\vspace{-2.5em}2022-08-05}
+
+\begin{document}
+\maketitle
+
+\hypertarget{gpp-report}{%
+\section{GPP report}\label{gpp-report}}
+
+A quick look at the dissolved oxygen profiles for each of the tanks.
+Clear diurnal patterns and obvious variation among tanks.
+
+\includegraphics{GPP-report_files/figure-latex/DO profiles-1.pdf}
+
+We estimated GPP, NPP, and ER based on the dawn-dusk-dawn
+O\textsubscript{2} measurements. The calculations were taken from
+Kritzberg et al. (2014) and can be summed up as:
+
+\[ GPP = NPP + ER \]
+
+\[ NPP = DO_{day2} - DO_{day1} \]
+
+\[ ER = DO_{day1_{night}} - DO_{day2_{morning}} \]
+
+Essentially, NPP is estimated by the difference in morning
+O\textsubscript{2} from the first to second day. ER is estimated as the
+loss of O\textsubscript{2} between dusk and dawn and is assumed to be
+constant (a tenuous assumption which we may need to address). GPP is the
+sum of NPP and ER. All measures are standardized to mg
+O\textsubscript{2} L\textsuperscript{-1} hr\textsuperscript{-1}.
+
+Some quick boxplots to observe the patterns among temperature and
+nutrient treatments.
+
+First up is gross production. Some interesting interactions seem to be
+happening in the heated nutrient treatments. Seemingly, nutrient
+addition have in inhibitory effect on total production. It will be
+interesting to see how this plays out in future measurements.
+
+\includegraphics{GPP-report_files/figure-latex/gpp boxplots-1.pdf}
+
+Next, the ER estimates (measured as O\textsubscript{2} consumption)
+mostly mirror the GPP patterns and suggest lower (less negative) rates
+of respiration in the heated nutrient addition treatments.
+
+\includegraphics{GPP-report_files/figure-latex/er boxplots-1.pdf}
+
+Our estimates of net production, a proxy of biomass accumulation in the
+mesocosms, shows a pattern opposite what I would predict. Namely, NPP
+decreases with warming and nutrient additions. Initial thoughts on this
+is that it could arise if warming and nutrient additions are revving up
+the heterotrophic pathways. Ultimately, the systems are `closed', so ER
+is limited by GPP and GPP may be limited by biomass--essentially the hi
+temp-hi nüts treatments are substrate limited in both the production and
+respiration sides of the equation.
+
+\includegraphics{GPP-report_files/figure-latex/np boxplots-1.pdf}
+
+The GPP:ER ratio shows the extent to which these systems may be
+accumulating biomass (the should mirror closely the relative patterns of
+NPP). Values above 1 represent systems that fix more C than they
+respire, and values below 1 respire more C than they fix.
+Unsurprisingly, the mesocosms are almost entirely above 1 since they are
+pretty close to blank slates and respiration is dependent on C fixed
+locally.
+
+\includegraphics{GPP-report_files/figure-latex/NEP estimates-1.pdf}
+
+\includegraphics{GPP-report_files/figure-latex/GPP-ER scatter-1.pdf}
+
+When we look at Net production and ER, there is no clear relationship.
+
+\includegraphics{GPP-report_files/figure-latex/NPP-ER scatter-1.pdf}
+
+\hypertarget{metabolisms-estimates-from-modeled-continouous-o2-series}{%
+\subsection{Metabolisms estimates from modeled continouous o2
+series}\label{metabolisms-estimates-from-modeled-continouous-o2-series}}
+
+Here we can use the time series to model the estimated diel signal in o2
+and temperature and then, with a few assumptions, we can further
+estimate air-water exchange and GPP, ER, and NEP.
+
+Similar plots to above, GPP, ER, NEP and GPP-ER relationships
+
+\includegraphics{GPP-report_files/figure-latex/cont gpp boxplots-1.pdf}
+
+Next, the ER estimates (measured as O\textsubscript{2} consumption)
+mostly mirror the GPP patterns and suggest lower (less negative) rates
+of respiration in the heated nutrient addition treatments.
+
+\includegraphics{GPP-report_files/figure-latex/cont er boxplots-1.pdf}
+
+Our estimates of net production, a proxy of biomass accumulation in the
+mesocosms, shows a pattern opposite what I would predict. Namely, NPP
+decreases with warming and nutrient additions. Initial thoughts on this
+is that it could arise if warming and nutrient additions are revving up
+the heterotrophic pathways. Ultimately, the systems are `closed', so ER
+is limited by GPP and GPP may be limited by biomass--essentially the hi
+temp-hi nüts treatments are substrate limited in both the production and
+respiration sides of the equation.
+
+\includegraphics{GPP-report_files/figure-latex/cont np boxplots-1.pdf}
+
+The GPP:ER ratio shows the extent to which these systems may be
+accumulating biomass (the should mirror closely the relative patterns of
+NPP). Values above 1 represent systems that fix more C than they
+respire, and values below 1 respire more C than they fix.
+Unsurprisingly, the mesocosms are almost entirely above 1 since they are
+pretty close to blank slates and respiration is dependent on C fixed
+locally.
+
+\includegraphics{GPP-report_files/figure-latex/cont NEP estimates-1.pdf}
+
+\includegraphics{GPP-report_files/figure-latex/contGPP-ER scatter-1.pdf}
+
+When we look at Net production and ER, there is no clear relationship.
+
+\includegraphics{GPP-report_files/figure-latex/cont NPP-ER scatter-1.pdf}
+
+\hypertarget{compare-dawn-dusk-and-continous-methods}{%
+\subsubsection{Compare Dawn-Dusk and continous
+methods}\label{compare-dawn-dusk-and-continous-methods}}
+
+\includegraphics{GPP-report_files/figure-latex/comb DD and Cont-1.pdf}
+
+\hypertarget{takeaways}{%
+\subsection{Takeaways}\label{takeaways}}
+
+My initial takeaways from this are the data are a bit puzzling.
+Somethings make a lot of sense: 1) tight relationships between GPP and
+ER, 2) GPP:ER \textasciitilde\textasciitilde{} 1 so they are pretty much
+in carbon balance, with just slightly higher production.
+
+There are a number of things that throw me a loop: 1) The relative
+patterns in NPP are opposite of what I would predict, which I touched on
+a bit above.
+
+\hypertarget{next-steps}{%
+\subsection{Next steps}\label{next-steps}}
+
+I am going to calculate metabolism based on the entire diel
+O\textsubscript{2} cycle rather than the three time points. This include
+estimating air-water exchange. It is possible this term is more
+important than we assumed and we are underestimating fluxes in the
+warmed mesocosms. If the air-water flux is large and the underestimation
+is systematic with productivity, this could account for the opposing
+relative patterns in NPP estimates across treatments.
+
+Or, as I noted earlier, it could be that the warming and nutrient
+additions are really stimulating the breakdown of C and there is a super
+tight C cycle going down.
+
+Jeff--how does this jive with the initial patterns you are seeing in
+emergence? Do the heated+/nutrient+ tanks have lower emergence?
+
+Would love to hear y'all's thoughts or questions on any of this.
+
+\hypertarget{references}{%
+\section*{References}\label{references}}
+\addcontentsline{toc}{section}{References}
+
+\hypertarget{refs}{}
+\begin{CSLReferences}{1}{0}
+\leavevmode\vadjust pre{\hypertarget{ref-kritzberg2014}{}}%
+Kritzberg, E. S., W. Granéli, J. Björk, C. Brönmark, P. Hallgren, A.
+Nicolle, A. Persson, and L.-A. Hansson. 2014.
+\href{https://doi.org/10.1111/fwb.12267}{Warming and browning of lakes:
+Consequences for pelagic carbon metabolism and sediment delivery}.
+Freshwater Biology 59:325--336.
+
+\end{CSLReferences}
+
+\end{document}
