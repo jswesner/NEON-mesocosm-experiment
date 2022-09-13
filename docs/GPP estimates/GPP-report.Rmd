@@ -297,7 +297,6 @@ fullMetab = expMetab %>%
   left_join(dusk_dawnMetEstimates %>% dplyr::select(-temp_treat, -nutrient_treat), by = c('tank', 'run'))
 
 
-
 fullMetab %>%
   ggplot() + 
   geom_point(aes(x = GPP_mg_o2_l_d, y = GP_mg_o2_l_hr*24, color = temp_treat, fill = nutrient_treat), shape = 21, size =3, stroke = 1.3) +
