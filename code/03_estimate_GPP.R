@@ -124,121 +124,10 @@ tank1_1 %>%
 o2_form = brms::bf(o2_do_mg_l ~ s(date_time, bs = 'tp') + fcov(v.o2),
                    data = tank1)
 
-fit_o2_gam = function(df = NULL,...){
-  require(brms)
-  require(mgcv)
-  # if(!is.formula(form) | is.na(as.formula(form))) stop("`form` must be formula object or coercible")
-  
-  tankID =paste0("t",unique(df$tank))
-  runID = gsub("run","",unique(df$run))
-  file_name = paste0("./data/models/o2_GAM_",tankID,"_",runID,".rds")
- 
-  formDefault = bf(o2_do_mg_l ~ s(run_hr, bs = 'tp'))
-  formOtherwise = bf(o2_do_mg_l ~ s(run_hr, bs = 'tp', k = 9))
-  
-  if(nrow(df) > 10){
-  model = brm(formDefault,
-        data = df,
-        family = gaussian(),
-        cores = 5, seed = 42,
-        iter = 1.5e4, warmup = 1e4, thin = 10,
-        file = file_name,
-        control = list(adapt_delta = 0.99),
-        save_pars = save_pars(all = TRUE),
-        sample_prior = TRUE,
-        file_refit = 'on_change',
-        backend = 'cmdstanr')
-  } else{
-    model = brm(formOtherwise,
-                data = df,
-                family = gaussian(),
-                cores = 5, seed = 42,
-                iter = 1.5e4, warmup = 1e4, thin = 10,
-                file = file_name,
-                control = list(adapt_delta = 0.99),
-                save_pars = save_pars(all = TRUE),
-                sample_prior = TRUE,
-                file_refit = 'on_change',
-                backend = 'cmdstanr')
-  }
-# 
-#     ,
-#                   otherwise = function(...){
-#                     brm(formOtherwise,
-#                         data = df,
-#                         family = gaussian(),
-#                         cores = 5, seed = 42,
-#                         iter = 1.2e4, warmup = 1e4, thin = 10,
-#                         file = file_name,
-#                         sample_prior = TRUE,
-#                         control = list(adapt_delta = 0.99),
-#                         save_pars = save_pars(all = TRUE),
-#                         file_refit = 'on_change',
-#                         backend = 'cmdstanr')
-#                     },
-#                   quiet = TRUE
-#                   )
-}
-fit_temp_gam = function(df = NULL,...){
-  require(brms)
-  require(mgcv)
-  # if(!is.formula(form) | is.na(as.formula(form))) stop("`form` must be formula object or coercible")
-  
-  tankID =paste0("t",unique(df$tank))
-  runID = gsub("run","",unique(df$run))
-  file_name = paste0("./data/models/temp_GAM_",tankID,"_",runID,".rds")
-  
-  formDefault = bf(temp_deg_c ~ s(run_hr, bs = 'tp'))
-  formOtherwise = bf(temp_deg_c ~ s(run_hr, bs = 'tp', k = 9))
-  
-  if(nrow(df) > 10){
-    model = brm(formDefault,
-                data = df,
-                family = gaussian(),
-                cores = 6, seed = 42, chains = 3,
-                threads = threading(2),
-                iter = 1.5e4, warmup = 1e4, thin = 10,
-                file = file_name,
-                control = list(adapt_delta = 0.99),
-                save_pars = save_pars(all = TRUE),
-                sample_prior = TRUE,
-                file_refit = 'on_change',
-                backend = 'cmdstanr')
-  } else{
-    model = brm(formOtherwise,
-                data = df,
-                family = gaussian(),
-                cores = 6, seed = 42, chains = 3,
-                threads = threading(2),
-                iter = 1.5e4, warmup = 1e4, thin = 10,
-                file = file_name,
-                control = list(adapt_delta = 0.99),
-                save_pars = save_pars(all = TRUE),
-                sample_prior = TRUE,
-                file_refit = 'on_change',
-                backend = 'cmdstanr')
-  }
-  # 
-  #     ,
-  #                   otherwise = function(...){
-  #                     brm(formOtherwise,
-  #                         data = df,
-  #                         family = gaussian(),
-  #                         cores = 5, seed = 42,
-  #                         iter = 1.2e4, warmup = 1e4, thin = 10,
-  #                         file = file_name,
-  #                         sample_prior = TRUE,
-  #                         control = list(adapt_delta = 0.99),
-  #                         save_pars = save_pars(all = TRUE),
-  #                         file_refit = 'on_change',
-  #                         backend = 'cmdstanr')
-  #                     },
-  #                   quiet = TRUE
-  #                   )
-}
 tankList = exp_data %>% ungroup %>% named_group_split(tank) %>% purrr::map(~.x %>% named_group_split(run))
-debug(fit_o2_gam)
 
+### Run the gams for temp and o2
+debug(fit_o2_gam)
 # tankList %>% purrr::walk(~.x %>% purrr::walk(~fit_o2_gam(.x)))
 # 
 # tankList %>% purrr::walk(~.x %>% purrr::walk(~fit_temp_gam(.x)))
@@ -247,20 +136,14 @@ debug(fit_o2_gam)
 # estimate metabolism from bayesian model with LakeMetabolizer
 tankNameList = exp_data %>% dplyr::select(tank, run) %>% dplyr::mutate(names = paste0("t",tank,"_",run)) %>% ungroup %>% dplyr::select(names)%>% distinct %>% unlist  %>% sapply(.,function(a) gsub("run","",a)) %>% unname
 
-purrr::walk(tankNameList, ~estimateContinuous(tankID = .x))
+# Estimate metabolism parameters from modal o2 and temp estimates ----
+# purrr::walk(tankNameList, ~estimateContinuous(tankID = .x))
 
+# Get list of files from all metabolism models ----
 metabFiles = list.files("./data/models",".*bayes.*.rds", full.names = TRUE)
-extract_metab = function(metabModel = NULL,...){
-  tankID = gsub(".*_(\\w{1}\\d{1,2}_\\d{1}).rds","\\1",sapply(strsplit(metabModel, "/"),"[",length(unlist(strsplit(metabModel,"/")))))
-  x = readRDS(metabModel)
-  return(data.frame(tank = tankID,
-                    x$metab,
-                    x$metab.sd))
-}
 
-# debugonce(extract_metab)
-
-expMetab = metabFiles %>% purrr::map(~extract_metab(metabModel = .x)) %>%
+## Extract the summaries and relevant plots ----
+expMetab = metabFiles %>% purrr::map(~extract_metab(metabModel = .x) %>% pluck('summary')) %>%
   bind_rows %>%
   dplyr::mutate(tankMod = as.numeric(gsub("t(\\d{1,2})_\\d{1}","\\1", tank)),
                 run = gsub("t\\d{1,2}_(\\d{1})","\\1", tank)) %>%
@@ -284,6 +167,16 @@ expMetab %>%
   ggplot()+
   geom_boxplot(aes(x = temp_treat, y = NEP, fill = nutrient_treat))+
   geom_hline(aes(yintercept = 0))
+
+# convert all the gpp coefficient estimates for each tank by multiplying GPP coefficient by par and summing across all time ----
+# debugonce(convert_metab)
+expMetabFull = metabFiles %>% purrr::map(~convert_metab(metabModel = .x)) %>% setNames(.,nm = tankNameList)
+
+# plot histogram of GPP estimates from t1_1
+hist(expMetabFull[[2]]$gpp.out)
+
+saveRDS(expMetabFull, "./data/gppPosteriors.rds")
+
 ####
 
 tank1_1new = with(tank1_1gam$data,

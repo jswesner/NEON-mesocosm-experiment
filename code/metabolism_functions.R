@@ -131,7 +131,8 @@ bayes.res = metab.bayesian(do.obs = modelDf[['do_obs']],
                            wtr = modelDf[['temp_obs']],
                            datetime = modelDf[['date_time']])
 saveRDS(bayes.res, file = paste0("./data/models/metab_bayes_",tankID,".rds"))
-return(tankID = bayes.res)
+return(list(tankID = bayes.res,
+            modelDf = modelDf))
 
 }
 
@@ -157,4 +158,148 @@ cor_matrix <- function(x, r, v = rep(1, length(x)), na.rm = FALSE) {
     mat <- mat[keep, keep]
   }
   mat
+}
+
+
+fit_o2_gam = function(df = NULL,...){
+  require(brms)
+  require(mgcv)
+  # if(!is.formula(form) | is.na(as.formula(form))) stop("`form` must be formula object or coercible")
+  
+  tankID =paste0("t",unique(df$tank))
+  runID = gsub("run","",unique(df$run))
+  file_name = paste0("./data/models/o2_GAM_",tankID,"_",runID,".rds")
+  
+  formDefault = bf(o2_do_mg_l ~ s(run_hr, bs = 'tp'))
+  formOtherwise = bf(o2_do_mg_l ~ s(run_hr, bs = 'tp', k = 9))
+  
+  if(nrow(df) > 10){
+    model = brm(formDefault,
+                data = df,
+                family = gaussian(),
+                cores = 5, seed = 42,
+                iter = 1.5e4, warmup = 1e4, thin = 10,
+                file = file_name,
+                control = list(adapt_delta = 0.99),
+                save_pars = save_pars(all = TRUE),
+                sample_prior = TRUE,
+                file_refit = 'on_change',
+                backend = 'cmdstanr')
+  } else{
+    model = brm(formOtherwise,
+                data = df,
+                family = gaussian(),
+                cores = 5, seed = 42,
+                iter = 1.5e4, warmup = 1e4, thin = 10,
+                file = file_name,
+                control = list(adapt_delta = 0.99),
+                save_pars = save_pars(all = TRUE),
+                sample_prior = TRUE,
+                file_refit = 'on_change',
+                backend = 'cmdstanr')
+  }
+  # 
+  #     ,
+  #                   otherwise = function(...){
+  #                     brm(formOtherwise,
+  #                         data = df,
+  #                         family = gaussian(),
+  #                         cores = 5, seed = 42,
+  #                         iter = 1.2e4, warmup = 1e4, thin = 10,
+  #                         file = file_name,
+  #                         sample_prior = TRUE,
+  #                         control = list(adapt_delta = 0.99),
+  #                         save_pars = save_pars(all = TRUE),
+  #                         file_refit = 'on_change',
+  #                         backend = 'cmdstanr')
+  #                     },
+  #                   quiet = TRUE
+  #                   )
+}
+
+#'
+#'
+#'
+fit_temp_gam = function(df = NULL,...){
+  require(brms)
+  require(mgcv)
+  # if(!is.formula(form) | is.na(as.formula(form))) stop("`form` must be formula object or coercible")
+  
+  tankID =paste0("t",unique(df$tank))
+  runID = gsub("run","",unique(df$run))
+  file_name = paste0("./data/models/temp_GAM_",tankID,"_",runID,".rds")
+  
+  formDefault = bf(temp_deg_c ~ s(run_hr, bs = 'tp'))
+  formOtherwise = bf(temp_deg_c ~ s(run_hr, bs = 'tp', k = 9))
+  
+  if(nrow(df) > 10){
+    model = brm(formDefault,
+                data = df,
+                family = gaussian(),
+                cores = 6, seed = 42, chains = 3,
+                threads = threading(2),
+                iter = 1.5e4, warmup = 1e4, thin = 10,
+                file = file_name,
+                control = list(adapt_delta = 0.99),
+                save_pars = save_pars(all = TRUE),
+                sample_prior = TRUE,
+                file_refit = 'on_change',
+                backend = 'cmdstanr')
+  } else{
+    model = brm(formOtherwise,
+                data = df,
+                family = gaussian(),
+                cores = 6, seed = 42, chains = 3,
+                threads = threading(2),
+                iter = 1.5e4, warmup = 1e4, thin = 10,
+                file = file_name,
+                control = list(adapt_delta = 0.99),
+                save_pars = save_pars(all = TRUE),
+                sample_prior = TRUE,
+                file_refit = 'on_change',
+                backend = 'cmdstanr')
+  }
+  # 
+  #     ,
+  #                   otherwise = function(...){
+  #                     brm(formOtherwise,
+  #                         data = df,
+  #                         family = gaussian(),
+  #                         cores = 5, seed = 42,
+  #                         iter = 1.2e4, warmup = 1e4, thin = 10,
+  #                         file = file_name,
+  #                         sample_prior = TRUE,
+  #                         control = list(adapt_delta = 0.99),
+  #                         save_pars = save_pars(all = TRUE),
+  #                         file_refit = 'on_change',
+  #                         backend = 'cmdstanr')
+  #                     },
+  #                   quiet = TRUE
+  #                   )
+}
+
+#'
+#'
+#'
+extract_metab = function(metabModel = NULL,...){
+tankID = gsub(".*_(\\w{1}\\d{1,2}_\\d{1}).rds","\\1",sapply(strsplit(metabModel, "/"),"[",length(unlist(strsplit(metabModel,"/")))))
+x = readRDS(metabModel)
+return(data.frame(tank = tankID,
+                  x$metab,
+                  x$metab.sd))
+}
+
+#'
+#'
+#'
+convert_metab = function(metabModel = NULL,...){
+  tankID = gsub(".*_(\\w{1}\\d{1,2}_\\d{1}).rds","\\1",sapply(strsplit(metabModel, "/"),"[",length(unlist(strsplit(metabModel,"/")))))
+  x = readRDS(metabModel)
+  gpp.coef = x$model$BUGSoutput$sims.list$C[,1]
+  par = environment(x[["model"]][["model"]][["data"]])[["data"]][["U"]][,1]
+  gpp.out = sapply(gpp.coef, function(a) sum(a*par))
+  return(list(summary = data.frame(tank = tankID,
+                                   x$metab,
+                                   x$metab.sd),
+              gpp.out = gpp.out))
 }
