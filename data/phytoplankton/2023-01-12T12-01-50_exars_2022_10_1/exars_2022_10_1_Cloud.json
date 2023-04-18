@@ -1,0 +1,157 @@
+[
+  {
+    "CellType": "Live",
+    "Cells": [],
+    "Cube": null,
+    "UIColor": "#ff51cc5b",
+    "FluorescentIndex": null,
+    "GatingParameters": {
+      "MinSize": 0.0,
+      "MaxSize": 70.0,
+      "MinBrightness": 0.0,
+      "MaxBrightness": 255.0,
+      "MinCircularity": 0.0,
+      "MaxCircularity": 100.0,
+      "ParameterChanged": {
+        "HasObservers": true,
+        "IsDisposed": false,
+        "Value": {}
+      }
+    },
+    "PendingGatingParameters": {
+      "MinSize": 0.0,
+      "MaxSize": 70.0,
+      "MinBrightness": 0.0,
+      "MaxBrightness": 255.0,
+      "MinCircularity": 0.0,
+      "MaxCircularity": 100.0,
+      "ParameterChanged": {
+        "HasObservers": false,
+        "IsDisposed": false,
+        "Value": {}
+      }
+    },
+    "Concentration": 0.0,
+    "GatedCount": 0,
+    "LightIntensity": 93.0,
+    "NormalizedLightIntensity": 36.0,
+    "CameraBinning": 1
+  },
+  {
+    "CellType": "Dead",
+    "Cells": [
+      {
+        "PosX": 839.9146341463414,
+        "PosY": 324.7926829268293,
+        "RadiusMajor": 8.154294207292866,
+        "RadiusMinor": 6.408003803903297,
+        "OrientationDegrees": -40.86822720123292,
+        "Size": 9.984478700198375,
+        "Circularity": 80.06882492826458,
+        "Brightness": 118.34146341463415,
+        "IsFluorescent": null,
+        "FluorescentBrightness": null,
+        "IsValid": true
+      },
+      {
+        "PosX": 573.3,
+        "PosY": 664.5666666666667,
+        "RadiusMajor": 9.399807402646235,
+        "RadiusMinor": 8.08285281829355,
+        "OrientationDegrees": -78.54883709187412,
+        "Size": 11.588428053248416,
+        "Circularity": 84.9081017825814,
+        "Brightness": 112.13333333333334,
+        "IsFluorescent": null,
+        "FluorescentBrightness": null,
+        "IsValid": true
+      },
+      {
+        "PosX": 436.5,
+        "PosY": 1036.8478260869565,
+        "RadiusMajor": 5.405311397535069,
+        "RadiusMinor": 5.360360002571865,
+        "OrientationDegrees": -0.0,
+        "Size": 6.44438838585551,
+        "Circularity": 66.70411999384571,
+        "Brightness": 124.30434782608695,
+        "IsFluorescent": null,
+        "FluorescentBrightness": null,
+        "IsValid": true
+      },
+      {
+        "PosX": 804.5,
+        "PosY": 1194.5,
+        "RadiusMajor": 5.089672082251528,
+        "RadiusMinor": 5.089672082251528,
+        "OrientationDegrees": -0.0,
+        "Size": 6.0379137877260565,
+        "Circularity": 85.8769218040076,
+        "Brightness": 129.0,
+        "IsFluorescent": null,
+        "FluorescentBrightness": null,
+        "IsValid": true
+      },
+      {
+        "PosX": 804.5952380952381,
+        "PosY": 1287.595238095238,
+        "RadiusMajor": 7.766391973605052,
+        "RadiusMinor": 6.8723824815647205,
+        "OrientationDegrees": -103.69987077280902,
+        "Size": 9.484945223482608,
+        "Circularity": 87.0112676275603,
+        "Brightness": 121.23809523809524,
+        "IsFluorescent": null,
+        "FluorescentBrightness": null,
+        "IsValid": true
+      },
+      {
+        "PosX": 771.6428571428571,
+        "PosY": 1770.251552795031,
+        "RadiusMajor": 15.4471095714705,
+        "RadiusMinor": 13.344545804177686,
+        "OrientationDegrees": -45.09814884249017,
+        "Size": 19.37603434884601,
+        "Circularity": 84.03361691578853,
+        "Brightness": 88.67701863354037,
+        "IsFluorescent": null,
+        "FluorescentBrightness": null,
+        "IsValid": true
+      }
+    ],
+    "Cube": null,
+    "UIColor": "#ffc83c3c",
+    "FluorescentIndex": null,
+    "GatingParameters": {
+      "MinSize": 0.0,
+      "MaxSize": 70.0,
+      "MinBrightness": 0.0,
+      "MaxBrightness": 255.0,
+      "MinCircularity": 0.0,
+      "MaxCircularity": 100.0,
+      "ParameterChanged": {
+        "HasObservers": true,
+        "IsDisposed": false,
+        "Value": {}
+      }
+    },
+    "PendingGatingParameters": {
+      "MinSize": 0.0,
+      "MaxSize": 70.0,
+      "MinBrightness": 0.0,
+      "MaxBrightness": 255.0,
+      "MinCircularity": 0.0,
+      "MaxCircularity": 100.0,
+      "ParameterChanged": {
+        "HasObservers": false,
+        "IsDisposed": false,
+        "Value": {}
+      }
+    },
+    "Concentration": 31390.653012000002,
+    "GatedCount": 6,
+    "LightIntensity": 93.0,
+    "NormalizedLightIntensity": 36.0,
+    "CameraBinning": 1
+  }
+]

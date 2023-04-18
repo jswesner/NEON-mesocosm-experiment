@@ -1,0 +1,92 @@
+[
+  {
+    "CellType": "Live",
+    "Cells": [],
+    "Cube": null,
+    "UIColor": "#ff51cc5b",
+    "FluorescentIndex": null,
+    "GatingParameters": {
+      "MinSize": 0.0,
+      "MaxSize": 70.0,
+      "MinBrightness": 0.0,
+      "MaxBrightness": 255.0,
+      "MinCircularity": 0.0,
+      "MaxCircularity": 100.0,
+      "ParameterChanged": {
+        "HasObservers": true,
+        "IsDisposed": false,
+        "Value": {}
+      }
+    },
+    "PendingGatingParameters": {
+      "MinSize": 0.0,
+      "MaxSize": 70.0,
+      "MinBrightness": 0.0,
+      "MaxBrightness": 255.0,
+      "MinCircularity": 0.0,
+      "MaxCircularity": 100.0,
+      "ParameterChanged": {
+        "HasObservers": false,
+        "IsDisposed": false,
+        "Value": {}
+      }
+    },
+    "Concentration": 0.0,
+    "GatedCount": 0,
+    "LightIntensity": 94.0,
+    "NormalizedLightIntensity": 37.0,
+    "CameraBinning": 1
+  },
+  {
+    "CellType": "Dead",
+    "Cells": [
+      {
+        "PosX": 1594.7727272727273,
+        "PosY": 1771.090909090909,
+        "RadiusMajor": 12.464967105645433,
+        "RadiusMinor": 4.474515534899231,
+        "OrientationDegrees": -77.98749740537059,
+        "Size": 15.53568524888637,
+        "Circularity": 57.34985329637763,
+        "Brightness": 42.70454545454545,
+        "IsFluorescent": null,
+        "FluorescentBrightness": null,
+        "IsValid": true
+      }
+    ],
+    "Cube": null,
+    "UIColor": "#ffc83c3c",
+    "FluorescentIndex": null,
+    "GatingParameters": {
+      "MinSize": 0.0,
+      "MaxSize": 70.0,
+      "MinBrightness": 0.0,
+      "MaxBrightness": 255.0,
+      "MinCircularity": 0.0,
+      "MaxCircularity": 100.0,
+      "ParameterChanged": {
+        "HasObservers": true,
+        "IsDisposed": false,
+        "Value": {}
+      }
+    },
+    "PendingGatingParameters": {
+      "MinSize": 0.0,
+      "MaxSize": 70.0,
+      "MinBrightness": 0.0,
+      "MaxBrightness": 255.0,
+      "MinCircularity": 0.0,
+      "MaxCircularity": 100.0,
+      "ParameterChanged": {
+        "HasObservers": false,
+        "IsDisposed": false,
+        "Value": {}
+      }
+    },
+    "Concentration": 5231.775502,
+    "GatedCount": 1,
+    "LightIntensity": 94.0,
+    "NormalizedLightIntensity": 37.0,
+    "CameraBinning": 1
+  }
+]

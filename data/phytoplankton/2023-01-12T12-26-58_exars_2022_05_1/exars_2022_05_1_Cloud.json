@@ -1,0 +1,105 @@
+[
+  {
+    "CellType": "Live",
+    "Cells": [
+      {
+        "PosX": 1037.5,
+        "PosY": 224.62962962962962,
+        "RadiusMajor": 17.017621581065193,
+        "RadiusMinor": 8.526647097828818,
+        "OrientationDegrees": 30.44022979397544,
+        "Size": 21.39851129340543,
+        "Circularity": 70.4469264233752,
+        "Brightness": 115.73148148148148,
+        "IsFluorescent": null,
+        "FluorescentBrightness": null,
+        "IsValid": true
+      },
+      {
+        "PosX": 1024.7,
+        "PosY": 227.2,
+        "RadiusMajor": 11.115512623078285,
+        "RadiusMinor": 3.3354728489210212,
+        "OrientationDegrees": 40.23867794240432,
+        "Size": 13.797882187177366,
+        "Circularity": 52.29049669879855,
+        "Brightness": 115.55,
+        "IsFluorescent": null,
+        "FluorescentBrightness": null,
+        "IsValid": true
+      }
+    ],
+    "Cube": null,
+    "UIColor": "#ff51cc5b",
+    "FluorescentIndex": null,
+    "GatingParameters": {
+      "MinSize": 0.0,
+      "MaxSize": 70.0,
+      "MinBrightness": 0.0,
+      "MaxBrightness": 255.0,
+      "MinCircularity": 0.0,
+      "MaxCircularity": 100.0,
+      "ParameterChanged": {
+        "HasObservers": true,
+        "IsDisposed": false,
+        "Value": {}
+      }
+    },
+    "PendingGatingParameters": {
+      "MinSize": 0.0,
+      "MaxSize": 70.0,
+      "MinBrightness": 0.0,
+      "MaxBrightness": 255.0,
+      "MinCircularity": 0.0,
+      "MaxCircularity": 100.0,
+      "ParameterChanged": {
+        "HasObservers": false,
+        "IsDisposed": false,
+        "Value": {}
+      }
+    },
+    "Concentration": 10463.551004,
+    "GatedCount": 2,
+    "LightIntensity": 90.0,
+    "NormalizedLightIntensity": 35.0,
+    "CameraBinning": 1
+  },
+  {
+    "CellType": "Dead",
+    "Cells": [],
+    "Cube": null,
+    "UIColor": "#ffc83c3c",
+    "FluorescentIndex": null,
+    "GatingParameters": {
+      "MinSize": 0.0,
+      "MaxSize": 70.0,
+      "MinBrightness": 0.0,
+      "MaxBrightness": 255.0,
+      "MinCircularity": 0.0,
+      "MaxCircularity": 100.0,
+      "ParameterChanged": {
+        "HasObservers": true,
+        "IsDisposed": false,
+        "Value": {}
+      }
+    },
+    "PendingGatingParameters": {
+      "MinSize": 0.0,
+      "MaxSize": 70.0,
+      "MinBrightness": 0.0,
+      "MaxBrightness": 255.0,
+      "MinCircularity": 0.0,
+      "MaxCircularity": 100.0,
+      "ParameterChanged": {
+        "HasObservers": false,
+        "IsDisposed": false,
+        "Value": {}
+      }
+    },
+    "Concentration": 0.0,
+    "GatedCount": 0,
+    "LightIntensity": 90.0,
+    "NormalizedLightIntensity": 35.0,
+    "CameraBinning": 1
+  }
+]

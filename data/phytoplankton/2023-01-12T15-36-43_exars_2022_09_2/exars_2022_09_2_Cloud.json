@@ -1,0 +1,301 @@
+[
+  {
+    "CellType": "Live",
+    "Cells": [
+      {
+        "PosX": 998.9285714285714,
+        "PosY": 19.642857142857142,
+        "RadiusMajor": 10.966174199834697,
+        "RadiusMinor": 6.724017487623609,
+        "OrientationDegrees": 39.76674522272703,
+        "Size": 13.605566868286578,
+        "Circularity": 70.59150397640931,
+        "Brightness": 113.32142857142857,
+        "IsFluorescent": null,
+        "FluorescentBrightness": null,
+        "IsValid": true
+      },
+      {
+        "PosX": 2197.7169312169312,
+        "PosY": 491.05026455026456,
+        "RadiusMajor": 27.463442188972127,
+        "RadiusMinor": 14.71924721287324,
+        "OrientationDegrees": -66.40041603901737,
+        "Size": 34.8504500353114,
+        "Circularity": 64.85332617143035,
+        "Brightness": 94.55026455026454,
+        "IsFluorescent": null,
+        "FluorescentBrightness": null,
+        "IsValid": true
+      },
+      {
+        "PosX": 342.5,
+        "PosY": 1022.5,
+        "RadiusMajor": 3.2659863237138747,
+        "RadiusMinor": 3.265986323687141,
+        "OrientationDegrees": -0.0,
+        "Size": 3.689404270937559,
+        "Circularity": 79.7884560803087,
+        "Brightness": 88.22222222222223,
+        "IsFluorescent": null,
+        "FluorescentBrightness": null,
+        "IsValid": true
+      },
+      {
+        "PosX": 263.8333333333333,
+        "PosY": 1035.8333333333333,
+        "RadiusMajor": 6.725083103452429,
+        "RadiusMinor": 4.0916391849864775,
+        "OrientationDegrees": 15.569486218799451,
+        "Size": 8.143966504961119,
+        "Circularity": 79.11101105734035,
+        "Brightness": 130.14285714285714,
+        "IsFluorescent": null,
+        "FluorescentBrightness": null,
+        "IsValid": true
+      },
+      {
+        "PosX": 272.875,
+        "PosY": 1034.875,
+        "RadiusMajor": 5.244535484642194,
+        "RadiusMinor": 3.9204397139005818,
+        "OrientationDegrees": 17.2542614938342,
+        "Size": 6.237344074777463,
+        "Circularity": 60.275310274812696,
+        "Brightness": 116.3125,
+        "IsFluorescent": null,
+        "FluorescentBrightness": null,
+        "IsValid": true
+      },
+      {
+        "PosX": 1334.264705882353,
+        "PosY": 1193.3235294117646,
+        "RadiusMajor": 5.181899763411708,
+        "RadiusMinor": 4.0412010400156,
+        "OrientationDegrees": 15.171624445856395,
+        "Size": 6.15668292648914,
+        "Circularity": 75.71509308678455,
+        "Brightness": 118.47058823529412,
+        "IsFluorescent": null,
+        "FluorescentBrightness": null,
+        "IsValid": true
+      },
+      {
+        "PosX": 401.94444444444446,
+        "PosY": 1700.2777777777778,
+        "RadiusMajor": 5.076445469433647,
+        "RadiusMinor": 4.461918168346067,
+        "OrientationDegrees": -64.59375880614277,
+        "Size": 6.02088079509986,
+        "Circularity": 75.05934425895158,
+        "Brightness": 102.05555555555556,
+        "IsFluorescent": null,
+        "FluorescentBrightness": null,
+        "IsValid": true
+      },
+      {
+        "PosX": 1792.0555555555557,
+        "PosY": 1751.5,
+        "RadiusMajor": 5.2587375847325575,
+        "RadiusMinor": 4.268749491597657,
+        "OrientationDegrees": -0.0,
+        "Size": 6.255633282259867,
+        "Circularity": 59.357073584287534,
+        "Brightness": 112.83333333333333,
+        "IsFluorescent": null,
+        "FluorescentBrightness": null,
+        "IsValid": true
+      },
+      {
+        "PosX": 786.2777777777778,
+        "PosY": 1893.0555555555557,
+        "RadiusMajor": 5.0764454693625485,
+        "RadiusMinor": 4.4619181684269575,
+        "OrientationDegrees": 25.40624118810508,
+        "Size": 6.020880795008301,
+        "Circularity": 75.05934428597656,
+        "Brightness": 119.05555555555556,
+        "IsFluorescent": null,
+        "FluorescentBrightness": null,
+        "IsValid": true
+      }
+    ],
+    "Cube": null,
+    "UIColor": "#ff51cc5b",
+    "FluorescentIndex": null,
+    "GatingParameters": {
+      "MinSize": 0.0,
+      "MaxSize": 70.0,
+      "MinBrightness": 0.0,
+      "MaxBrightness": 255.0,
+      "MinCircularity": 0.0,
+      "MaxCircularity": 100.0,
+      "ParameterChanged": {
+        "HasObservers": true,
+        "IsDisposed": false,
+        "Value": {}
+      }
+    },
+    "PendingGatingParameters": {
+      "MinSize": 0.0,
+      "MaxSize": 70.0,
+      "MinBrightness": 0.0,
+      "MaxBrightness": 255.0,
+      "MinCircularity": 0.0,
+      "MaxCircularity": 100.0,
+      "ParameterChanged": {
+        "HasObservers": false,
+        "IsDisposed": false,
+        "Value": {}
+      }
+    },
+    "Concentration": 47085.97951800001,
+    "GatedCount": 9,
+    "LightIntensity": 93.0,
+    "NormalizedLightIntensity": 36.0,
+    "CameraBinning": 1
+  },
+  {
+    "CellType": "Dead",
+    "Cells": [
+      {
+        "PosX": 1011.7,
+        "PosY": 15.5,
+        "RadiusMajor": 6.332982446403556,
+        "RadiusMinor": 6.0,
+        "OrientationDegrees": -0.0,
+        "Size": 7.639026374619421,
+        "Circularity": 84.00628444709031,
+        "Brightness": 110.23333333333333,
+        "IsFluorescent": null,
+        "FluorescentBrightness": null,
+        "IsValid": true
+      },
+      {
+        "PosX": 2180.9347826086955,
+        "PosY": 454.67391304347825,
+        "RadiusMajor": 11.012263409142879,
+        "RadiusMinor": 5.367443497355201,
+        "OrientationDegrees": -125.80919683580584,
+        "Size": 13.664919717961908,
+        "Circularity": 69.16673083306016,
+        "Brightness": 89.93478260869566,
+        "IsFluorescent": null,
+        "FluorescentBrightness": null,
+        "IsValid": true
+      },
+      {
+        "PosX": 2006.8,
+        "PosY": 463.0,
+        "RadiusMajor": 6.139961963407099,
+        "RadiusMinor": 4.115928460039223,
+        "OrientationDegrees": -39.669825852555874,
+        "Size": 7.390458089688696,
+        "Circularity": 73.10251253393332,
+        "Brightness": 85.4,
+        "IsFluorescent": null,
+        "FluorescentBrightness": null,
+        "IsValid": true
+      },
+      {
+        "PosX": 2504.254385964912,
+        "PosY": 1543.657894736842,
+        "RadiusMajor": 9.820192696992777,
+        "RadiusMinor": 7.42648045509619,
+        "OrientationDegrees": 30.289477165674285,
+        "Size": 12.129792627637835,
+        "Circularity": 79.8662226792379,
+        "Brightness": 90.85964912280701,
+        "IsFluorescent": null,
+        "FluorescentBrightness": null,
+        "IsValid": true
+      },
+      {
+        "PosX": 265.2659574468085,
+        "PosY": 1553.904255319149,
+        "RadiusMajor": 8.708013658931929,
+        "RadiusMinor": 7.102579895201004,
+        "OrientationDegrees": -112.49999999976772,
+        "Size": 10.697548589414378,
+        "Circularity": 74.99044465817443,
+        "Brightness": 105.70212765957447,
+        "IsFluorescent": null,
+        "FluorescentBrightness": null,
+        "IsValid": true
+      },
+      {
+        "PosX": 262.72222222222223,
+        "PosY": 1564.2037037037037,
+        "RadiusMajor": 7.805034271408039,
+        "RadiusMinor": 4.82425993472018,
+        "OrientationDegrees": 10.559526864578665,
+        "Size": 9.534708075287549,
+        "Circularity": 72.64370679986645,
+        "Brightness": 116.48148148148148,
+        "IsFluorescent": null,
+        "FluorescentBrightness": null,
+        "IsValid": true
+      },
+      {
+        "PosX": 2511.685185185185,
+        "PosY": 1578.2530864197531,
+        "RadiusMajor": 12.605927259764844,
+        "RadiusMinor": 8.24132483211325,
+        "OrientationDegrees": -46.31954988028357,
+        "Size": 15.717211184419728,
+        "Circularity": 80.48896329807545,
+        "Brightness": 100.77777777777777,
+        "IsFluorescent": null,
+        "FluorescentBrightness": null,
+        "IsValid": true
+      },
+      {
+        "PosX": 2395.5,
+        "PosY": 1778.5,
+        "RadiusMajor": 6.299733543989016,
+        "RadiusMinor": 4.793748422961726,
+        "OrientationDegrees": 14.305229831962976,
+        "Size": 7.596209039791992,
+        "Circularity": 80.1885743834662,
+        "Brightness": 101.54166666666667,
+        "IsFluorescent": null,
+        "FluorescentBrightness": null,
+        "IsValid": true
+      }
+    ],
+    "Cube": null,
+    "UIColor": "#ffc83c3c",
+    "FluorescentIndex": null,
+    "GatingParameters": {
+      "MinSize": 0.0,
+      "MaxSize": 70.0,
+      "MinBrightness": 0.0,
+      "MaxBrightness": 255.0,
+      "MinCircularity": 0.0,
+      "MaxCircularity": 100.0,
+      "ParameterChanged": {
+        "HasObservers": true,
+        "IsDisposed": false,
+        "Value": {}
+      }
+    },
+    "PendingGatingParameters": {
+      "MinSize": 0.0,
+      "MaxSize": 70.0,
+      "MinBrightness": 0.0,
+      "MaxBrightness": 255.0,
+      "MinCircularity": 0.0,
+      "MaxCircularity": 100.0,
+      "ParameterChanged": {
+        "HasObservers": false,
+        "IsDisposed": false,
+        "Value": {}
+      }
+    },
+    "Concentration": 41854.204016,
+    "GatedCount": 8,
+    "LightIntensity": 93.0,
+    "NormalizedLightIntensity": 36.0,
+    "CameraBinning": 1
+  }
+]

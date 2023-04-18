@@ -1,0 +1,144 @@
+[
+  {
+    "CellType": "Live",
+    "Cells": [],
+    "Cube": null,
+    "UIColor": "#ff51cc5b",
+    "FluorescentIndex": null,
+    "GatingParameters": {
+      "MinSize": 0.0,
+      "MaxSize": 70.0,
+      "MinBrightness": 0.0,
+      "MaxBrightness": 255.0,
+      "MinCircularity": 0.0,
+      "MaxCircularity": 100.0,
+      "ParameterChanged": {
+        "HasObservers": true,
+        "IsDisposed": false,
+        "Value": {}
+      }
+    },
+    "PendingGatingParameters": {
+      "MinSize": 0.0,
+      "MaxSize": 70.0,
+      "MinBrightness": 0.0,
+      "MaxBrightness": 255.0,
+      "MinCircularity": 0.0,
+      "MaxCircularity": 100.0,
+      "ParameterChanged": {
+        "HasObservers": false,
+        "IsDisposed": false,
+        "Value": {}
+      }
+    },
+    "Concentration": 0.0,
+    "GatedCount": 0,
+    "LightIntensity": 91.0,
+    "NormalizedLightIntensity": 36.0,
+    "CameraBinning": 1
+  },
+  {
+    "CellType": "Dead",
+    "Cells": [
+      {
+        "PosX": 1448.351851851852,
+        "PosY": 288.7962962962963,
+        "RadiusMajor": 7.502483628961823,
+        "RadiusMinor": 4.506752595406567,
+        "OrientationDegrees": -22.821317472961887,
+        "Size": 9.145088833173617,
+        "Circularity": 72.586181963084,
+        "Brightness": 126.55555555555556,
+        "IsFluorescent": null,
+        "FluorescentBrightness": null,
+        "IsValid": true
+      },
+      {
+        "PosX": 1436.0555555555557,
+        "PosY": 290.94444444444446,
+        "RadiusMajor": 5.900439563159113,
+        "RadiusMinor": 3.8936000825274513,
+        "OrientationDegrees": -2.883944449483995,
+        "Size": 7.0820054772619345,
+        "Circularity": 59.43318509838438,
+        "Brightness": 128.66666666666666,
+        "IsFluorescent": null,
+        "FluorescentBrightness": null,
+        "IsValid": true
+      },
+      {
+        "PosX": 1801.82,
+        "PosY": 353.62,
+        "RadiusMajor": 9.075387402506575,
+        "RadiusMinor": 7.023542090361827,
+        "OrientationDegrees": -126.81306063435498,
+        "Size": 11.170645848064414,
+        "Circularity": 81.5870261446998,
+        "Brightness": 121.82,
+        "IsFluorescent": null,
+        "FluorescentBrightness": null,
+        "IsValid": true
+      },
+      {
+        "PosX": 1997.983870967742,
+        "PosY": 735.3387096774194,
+        "RadiusMajor": 6.590554302999084,
+        "RadiusMinor": 5.981812080626886,
+        "OrientationDegrees": -65.20601093913925,
+        "Size": 7.970722750291364,
+        "Circularity": 73.02252618059289,
+        "Brightness": 121.96774193548387,
+        "IsFluorescent": null,
+        "FluorescentBrightness": null,
+        "IsValid": true
+      },
+      {
+        "PosX": 171.54545454545453,
+        "PosY": 1538.7727272727273,
+        "RadiusMajor": 8.050874275542883,
+        "RadiusMinor": 6.925932960126074,
+        "OrientationDegrees": 15.402347862148744,
+        "Size": 9.851296383670768,
+        "Circularity": 83.05141648564093,
+        "Brightness": 119.25,
+        "IsFluorescent": null,
+        "FluorescentBrightness": null,
+        "IsValid": true
+      }
+    ],
+    "Cube": null,
+    "UIColor": "#ffc83c3c",
+    "FluorescentIndex": null,
+    "GatingParameters": {
+      "MinSize": 0.0,
+      "MaxSize": 70.0,
+      "MinBrightness": 0.0,
+      "MaxBrightness": 255.0,
+      "MinCircularity": 0.0,
+      "MaxCircularity": 100.0,
+      "ParameterChanged": {
+        "HasObservers": true,
+        "IsDisposed": false,
+        "Value": {}
+      }
+    },
+    "PendingGatingParameters": {
+      "MinSize": 0.0,
+      "MaxSize": 70.0,
+      "MinBrightness": 0.0,
+      "MaxBrightness": 255.0,
+      "MinCircularity": 0.0,
+      "MaxCircularity": 100.0,
+      "ParameterChanged": {
+        "HasObservers": false,
+        "IsDisposed": false,
+        "Value": {}
+      }
+    },
+    "Concentration": 26158.877510000002,
+    "GatedCount": 5,
+    "LightIntensity": 91.0,
+    "NormalizedLightIntensity": 36.0,
+    "CameraBinning": 1
+  }
+]

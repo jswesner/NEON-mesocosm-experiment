@@ -1,14 +1,10 @@
 library(tidyverse)
-library(googledrive)
+library(rio)
 library(lubridate)
 library(ggthemes)
 library(janitor)
 library(LakeMetabolizer)
 library(streamMetabolizer)
-#download latest data
-drive_download("NEON mesocosm study 2022/temperature",
-               path = "data/temperature.csv",
-               overwrite = T)
 
 treatments = read_csv("data/treatments.csv") %>% 
   mutate(treatment = paste0(temp_treat, "_",nutrient_treat))
@@ -23,8 +19,8 @@ temperature <- read_csv("data/temperature.csv") %>%
 site_coords = c(42.800489,-96.926772)
 
 
-
-
+# body size
+body_sizes <- import_list("data/body size data.xlsx", setclass = "tbl") %>% bind_rows()
 
 # Save o2 measures --------------------------------------------------------
 
@@ -36,17 +32,19 @@ temperature %>%
 
 
 # Plot temperature --------------------------------------------------------
-temperature %>% 
+temp_plot = temperature %>% 
   filter(date >= "2022-05-27") %>%
   drop_na(temp_deg_f) %>% 
   drop_na(temp_deg_c) %>% 
   ggplot(aes(x = date_time, y = temp_deg_c, color = temp_treat)) + 
-  geom_point() + 
-  geom_line(aes(group = tank), alpha = 0.5) +
+  geom_point(size = 0.3) + 
+  geom_line(aes(group = tank), alpha = 0.5, linewidth = 0.2) +
   scale_color_colorblind() + 
   theme_classic() + 
   # scale_y_log10() +
   NULL
+
+ggsave(temp_plot, file = "plots/temp_plot.jpg", width = 5, height = 3)
 
 temperature %>%
   filter(date >= "2022-05-27") %>% 

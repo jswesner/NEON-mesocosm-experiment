@@ -245,7 +245,12 @@ debug(fit_o2_gam)
 
 
 # estimate metabolism from bayesian model with LakeMetabolizer
-tankNameList = exp_data %>% dplyr::select(tank, run) %>% dplyr::mutate(names = paste0("t",tank,"_",run)) %>% ungroup %>% dplyr::select(names)%>% distinct %>% unlist  %>% sapply(.,function(a) gsub("run","",a)) %>% unname
+tankNameList = exp_data %>% dplyr::select(tank, run) %>% 
+  dplyr::mutate(names = paste0("t",tank,"_",run)) %>% 
+  ungroup %>% dplyr::select(names)%>% 
+  distinct %>% 
+  unlist %>% 
+  sapply(.,function(a) gsub("run","",a)) %>% unname
 
 purrr::walk(tankNameList, ~estimateContinuous(tankID = .x))
 

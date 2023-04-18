@@ -1,0 +1,145 @@
+[
+  {
+    "CellType": "Live",
+    "Cells": [
+      {
+        "PosX": 1816.557142857143,
+        "PosY": 341.87142857142857,
+        "RadiusMajor": 7.82448325058481,
+        "RadiusMinor": 5.680643164106787,
+        "OrientationDegrees": 40.719280384278306,
+        "Size": 9.55975411870519,
+        "Circularity": 78.75069929948604,
+        "Brightness": 99.82857142857142,
+        "IsFluorescent": null,
+        "FluorescentBrightness": null,
+        "IsValid": true
+      },
+      {
+        "PosX": 2420.766666666667,
+        "PosY": 999.1666666666666,
+        "RadiusMajor": 4.784147336114096,
+        "RadiusMinor": 4.080405867058163,
+        "OrientationDegrees": -32.886127367153854,
+        "Size": 5.644464548700628,
+        "Circularity": 72.73943293127174,
+        "Brightness": 115.73333333333333,
+        "IsFluorescent": null,
+        "FluorescentBrightness": null,
+        "IsValid": true
+      }
+    ],
+    "Cube": null,
+    "UIColor": "#ff51cc5b",
+    "FluorescentIndex": null,
+    "GatingParameters": {
+      "MinSize": 0.0,
+      "MaxSize": 70.0,
+      "MinBrightness": 0.0,
+      "MaxBrightness": 255.0,
+      "MinCircularity": 0.0,
+      "MaxCircularity": 100.0,
+      "ParameterChanged": {
+        "HasObservers": true,
+        "IsDisposed": false,
+        "Value": {}
+      }
+    },
+    "PendingGatingParameters": {
+      "MinSize": 0.0,
+      "MaxSize": 70.0,
+      "MinBrightness": 0.0,
+      "MaxBrightness": 255.0,
+      "MinCircularity": 0.0,
+      "MaxCircularity": 100.0,
+      "ParameterChanged": {
+        "HasObservers": false,
+        "IsDisposed": false,
+        "Value": {}
+      }
+    },
+    "Concentration": 10463.551004,
+    "GatedCount": 2,
+    "LightIntensity": 90.0,
+    "NormalizedLightIntensity": 35.0,
+    "CameraBinning": 1
+  },
+  {
+    "CellType": "Dead",
+    "Cells": [
+      {
+        "PosX": 1826.6830985915492,
+        "PosY": 334.2957746478873,
+        "RadiusMajor": 29.54296530051324,
+        "RadiusMinor": 13.855781877401917,
+        "OrientationDegrees": -126.03445869988953,
+        "Size": 37.52842226543511,
+        "Circularity": 61.27360215150641,
+        "Brightness": 19.93661971830986,
+        "IsFluorescent": null,
+        "FluorescentBrightness": null,
+        "IsValid": true
+      },
+      {
+        "PosX": 1805.4281767955802,
+        "PosY": 348.66022099447514,
+        "RadiusMajor": 31.28853294787686,
+        "RadiusMinor": 16.62516470047901,
+        "OrientationDegrees": -124.21741513168236,
+        "Size": 39.77633269234922,
+        "Circularity": 62.01493618162692,
+        "Brightness": 21.925414364640883,
+        "IsFluorescent": null,
+        "FluorescentBrightness": null,
+        "IsValid": true
+      },
+      {
+        "PosX": 2587.0,
+        "PosY": 1460.75,
+        "RadiusMajor": 5.979991318045334,
+        "RadiusMinor": 5.258932449082311,
+        "OrientationDegrees": -119.87178142202711,
+        "Size": 7.184450787564367,
+        "Circularity": 71.82275655796144,
+        "Brightness": 104.5,
+        "IsFluorescent": null,
+        "FluorescentBrightness": null,
+        "IsValid": true
+      }
+    ],
+    "Cube": null,
+    "UIColor": "#ffc83c3c",
+    "FluorescentIndex": null,
+    "GatingParameters": {
+      "MinSize": 0.0,
+      "MaxSize": 70.0,
+      "MinBrightness": 0.0,
+      "MaxBrightness": 255.0,
+      "MinCircularity": 0.0,
+      "MaxCircularity": 100.0,
+      "ParameterChanged": {
+        "HasObservers": true,
+        "IsDisposed": false,
+        "Value": {}
+      }
+    },
+    "PendingGatingParameters": {
+      "MinSize": 0.0,
+      "MaxSize": 70.0,
+      "MinBrightness": 0.0,
+      "MaxBrightness": 255.0,
+      "MinCircularity": 0.0,
+      "MaxCircularity": 100.0,
+      "ParameterChanged": {
+        "HasObservers": false,
+        "IsDisposed": false,
+        "Value": {}
+      }
+    },
+    "Concentration": 15695.326506000001,
+    "GatedCount": 3,
+    "LightIntensity": 90.0,
+    "NormalizedLightIntensity": 35.0,
+    "CameraBinning": 1
+  }
+]
