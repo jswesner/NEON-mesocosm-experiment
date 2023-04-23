@@ -2,6 +2,7 @@ library(readxl)
 library(rstan)
 library(tidyverse)
 
+# lw_functions
 macro_lw_coeffs <- read_csv("C:/Users/Jeff.Wesner/OneDrive - The University of South Dakota/USD/Github Projects/neon_size_spectra/data/raw_data/inverts/macro_lw_coeffs.csv") %>% 
   pivot_longer(cols = c(subphylum, class, order, family, genus, taxon),
                names_to = "group",
