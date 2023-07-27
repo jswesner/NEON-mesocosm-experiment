@@ -19,7 +19,7 @@ fit_nodaphnia = brm(dw_mg| vreal(counts, xmin, xmax) ~ temp_treat*nutrient_treat
                     prior(normal(0, 0.2), class = "b")))
 
 fit_daphnia = update(fit, newdata = dw)
-
+saveRDS(fit_daphnia, file = "models/fit_daphnia.rds")
 
 
 # check model -------------------------------------------------------------
