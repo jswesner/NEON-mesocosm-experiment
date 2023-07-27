@@ -21,6 +21,10 @@ fit = brm(dw_mg| vreal(counts, xmin, xmax) ~ temp_treat*nutrient_treat,
 
 fit = update(fit, iter = 2000, chains = 4)
 
+fit_nodaphnia = update(fit, newdata = dw %>% filter(taxon != "daphnia"))
+
+
+
 # check model -------------------------------------------------------------
 
 summary(fit)
