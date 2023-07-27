@@ -34,10 +34,9 @@ lengths_raw <- import_list("data/body size data.xlsx", setclass = "tbl") %>%  # 
 taxon_fixes = read_csv("data/taxon_fixes.csv") %>% 
   distinct(taxon, correct_taxon, correct_stage)
 
-#6) fix taxa, filter out daphnia, add treatment info
+#6) fix taxa, add treatment info
 lengths_fixed = lengths_raw %>% 
   left_join(taxon_fixes) %>% 
-  filter(correct_taxon != "daphnia") %>% 
   left_join(treatments_temperature)
 
 #7) Save

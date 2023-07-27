@@ -11,4 +11,4 @@ macro_lw_coeffs <- read_csv("C:/Users/Jeff.Wesner/OneDrive - The University of S
   bind_rows(tibble(taxon = "daphnia",   # from Sterner et al https://aslopubs.onlinelibrary.wiley.com/doi/pdf/10.4319/lo.1993.38.4.0857
                    a = -2.7,
                    b = 2.57)) %>% 
-  write_csv(., file = "data/macro_lw_coeffs")
+  write_csv(., file = "data/macro_lw_coeffs.csv")

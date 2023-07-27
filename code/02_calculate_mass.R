@@ -2,7 +2,7 @@ library(tidyverse)
 
 
 # load data ---------------------------------------------------------------
-macro_lw_coeffs = read_csv("data/macro_length_coeffs.csv") # published length-weight coefficients
+macro_lw_coeffs = read_csv("data/macro_lw_coeffs.csv") # published length-weight coefficients
 
 lengths_fixed = read_csv("data/lengths_fixed.csv")
 
