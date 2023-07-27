@@ -27,3 +27,4 @@ dw_fixed = dw_raw %>%
 
 write_csv(dw_fixed, file = "data/dw_fixed.csv")
 saveRDS(dw_fixed, file = "data/dw_fixed.rds")
+

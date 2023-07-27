@@ -37,7 +37,8 @@ taxon_fixes = read_csv("data/taxon_fixes.csv") %>%
 #6) fix taxa, add treatment info
 lengths_fixed = lengths_raw %>% 
   left_join(taxon_fixes) %>% 
-  left_join(treatments_temperature)
+  left_join(treatments_temperature) %>% 
+  filter(!is.na(length_mm))
 
 #7) Save
 write_csv(lengths_fixed, file = "data/lengths_fixed.csv")

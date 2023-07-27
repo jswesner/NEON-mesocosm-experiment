@@ -1,4 +1,4 @@
-taxon,formula,a,b
+correct_taxon,formula,a,b
 Ablabesmyia,M = aL^b,0.001,2.884
 Acroneuria,M = aL^b,0.00775,2.983
 Aeshnidae,M = aL^b,0.008066666666666666,2.813
@@ -205,4 +205,5 @@ Unionidae,M = aL^b,0.00978,2.809
 Unionoida,M = aL^b,0.00978,2.809
 Veliidae,M = aL^b,0.012799999999999999,2.71875
 NA,M = aL^b,0.021407571069767442,2.737481395348837
-daphnia,NA,-2.7,2.57
+Daphnia,NA,-2.7,2.57
+Dytiscidae,NA,0.0618,2.052
