@@ -28,6 +28,10 @@ summary(fit_nodaphnia)
 
 plot_fit = plot(conditional_effects(fit_nodaphnia, effects = "temp_treat:nutrient_treat"))
 
+saveRDS(plot_fit, file = "plots/plot_fit.rds")
+
+plot_fit = readRDS(file = "plots/plot_fit.rds")
+
 plot_fit$`temp_treat:nutrient_treat`$data %>% 
   ggplot(aes(x = temp_treat, y = estimate__, color = nutrient_treat)) + 
   geom_point(position = position_dodge(width = .2)) +
