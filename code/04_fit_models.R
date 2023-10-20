@@ -3,6 +3,7 @@ library(tidyverse)
 # 1) install RStan (read the instructions carefully)
 # 2) install brms via install.packages("brms")
 library(brms) 
+library(isdbayes)
 
 # model isd ---------------------------------------------------------------
 
@@ -23,6 +24,14 @@ saveRDS(fit_daphnia, file = "models/fit_daphnia.rds")
 
 # check model -------------------------------------------------------------
 
-summary(fit)
+summary(fit_nodaphnia)
 
-conditional_effects(fit)
+plot_fit = plot(conditional_effects(fit_nodaphnia, effects = "temp_treat:nutrient_treat"))
+
+plot_fit$`temp_treat:nutrient_treat`$data %>% 
+  ggplot(aes(x = temp_treat, y = estimate__, color = nutrient_treat)) + 
+  geom_point(position = position_dodge(width = .2)) +
+  geom_linerange(aes(ymin = lower__, ymax = upper__),
+                 position = position_dodge(width = .2)) +
+  labs(y = "asdfasdf") +
+  theme_default()
