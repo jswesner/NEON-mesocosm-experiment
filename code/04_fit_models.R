@@ -3,11 +3,10 @@ library(tidyverse)
 # 1) install RStan (read the instructions carefully)
 # 2) install brms via install.packages("brms")
 library(brms) 
-source("models/paretocounts.R") # loads the models necessary for fitting the isd
 
 # model isd ---------------------------------------------------------------
 
-dw = readRDS(dw_fixed, file = "data/dw_fixed.rds")
+dw = readRDS(file = "data/dw_fixed.rds")
 
 fit_nodaphnia = brm(dw_mg| vreal(counts, xmin, xmax) ~ temp_treat*nutrient_treat, 
           data = dw %>% filter(correct_taxon != "Daphnia"),
