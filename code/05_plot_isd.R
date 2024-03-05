@@ -9,20 +9,21 @@ dw = readRDS(file = "data/dw_fixed.rds") %>%
 
 # load models
 # fit_nodaphnia = readRDS(file = "models/fit_nodaphnia_tank.rds")
-fit_withdaphnia = readRDS(file = "models/fit_withdaphnia.rds")
+# fit_withdaphnia = readRDS(file = "models/fit_withdaphnia.rds")
 
 newdat = fit_withdaphnia$data %>% group_by(dw_mg, xmin ,xmax, temp_treat, nutrient_treat, tank) %>% 
   reframe(counts = sum(counts))
 
-fit_withdaphnia = update(fit_withdaphnia, newdata = newdat,
-                         iter = 2000, chains = 4)
-saveRDS(fit_withdaphnia, file = "models/fit_withdaphnia.rds")
+# fit_withdaphnia = update(fit_withdaphnia, newdata = newdat,
+                         # iter = 2000, chains = 4)
+# saveRDS(fit_withdaphnia, file = "models/fit_withdaphnia.rds")
 
 
 
 
 
-fit = fit_withdaphnia
+fit = readRDS(fit_withdaphnia, file = "models/fit_withdaphnia.rds")
+
 fit_posts = fit$data %>% 
   group_by(temp_treat, nutrient_treat, tank) %>% 
   mutate(xmin = min(dw_mg),
