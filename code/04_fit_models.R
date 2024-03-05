@@ -4,6 +4,7 @@ library(tidyverse)
 # 2) install brms via install.packages("brms")
 library(brms) 
 library(isdbayes)
+<<<<<<< HEAD
 library(tidybayes)
 library(ggthemes)
 library(viridis)
@@ -13,6 +14,12 @@ library(viridis)
 dw = readRDS(file = "data/dw_fixed.rds") %>% 
   mutate(tank = as.integer(tank)) %>% 
   filter(correct_taxon != "Daphnia")
+=======
+
+# model isd ---------------------------------------------------------------
+
+dw = readRDS(file = "data/dw_fixed.rds")
+>>>>>>> 505ce3cf1f0066d7de966ba229d2bf5a88180f36
 
 fit_nodaphnia = brm(dw_mg| vreal(counts, xmin, xmax) ~ temp_treat*nutrient_treat + (1|tank), 
           data = dw ,
@@ -27,8 +34,9 @@ saveRDS(fit_nodaphnia, file = "models/fit_nodaphnia_tank.rds")
 
 # check model -------------------------------------------------------------
 
-summary(fit)
+summary(fit_nodaphnia)
 
+<<<<<<< HEAD
 conditional_effects(fit)
 
 
@@ -129,3 +137,18 @@ lambda_posts %>%
 
 
 
+=======
+plot_fit = plot(conditional_effects(fit_nodaphnia, effects = "temp_treat:nutrient_treat"))
+
+saveRDS(plot_fit, file = "plots/plot_fit.rds")
+
+plot_fit = readRDS(file = "plots/plot_fit.rds")
+
+plot_fit$`temp_treat:nutrient_treat`$data %>% 
+  ggplot(aes(x = temp_treat, y = estimate__, color = nutrient_treat)) + 
+  geom_point(position = position_dodge(width = .2)) +
+  geom_linerange(aes(ymin = lower__, ymax = upper__),
+                 position = position_dodge(width = .2)) +
+  labs(y = "asdfasdf") +
+  theme_default()
+>>>>>>> 505ce3cf1f0066d7de966ba229d2bf5a88180f36
