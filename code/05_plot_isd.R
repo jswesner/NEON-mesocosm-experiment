@@ -9,7 +9,7 @@ dw = readRDS(file = "data/dw_fixed.rds") %>%
 
 # load models
 # fit_nodaphnia = readRDS(file = "models/fit_nodaphnia_tank.rds")
-# fit_withdaphnia = readRDS(file = "models/fit_withdaphnia.rds")
+fit_withdaphnia = readRDS(file = "models/fit_withdaphnia.rds")
 
 newdat = fit_withdaphnia$data %>% group_by(dw_mg, xmin ,xmax, temp_treat, nutrient_treat, tank) %>% 
   reframe(counts = sum(counts))
@@ -17,9 +17,6 @@ newdat = fit_withdaphnia$data %>% group_by(dw_mg, xmin ,xmax, temp_treat, nutrie
 # fit_withdaphnia = update(fit_withdaphnia, newdata = newdat,
                          # iter = 2000, chains = 4)
 # saveRDS(fit_withdaphnia, file = "models/fit_withdaphnia.rds")
-
-
-
 
 
 fit = readRDS(fit_withdaphnia, file = "models/fit_withdaphnia.rds")
@@ -33,7 +30,38 @@ fit_posts = fit$data %>%
   add_epred_draws(fit, re_formula = NULL) %>% 
   group_by(temp_treat, tank, nutrient_treat, xmin, xmax) %>% 
   median_qi(.epred)
-  
+
+
+fit$data %>% 
+  group_by(temp_treat, nutrient_treat) %>% 
+  mutate(xmin = min(dw_mg),
+         xmax = max(dw_mg)) %>% 
+  distinct(temp_treat, nutrient_treat, xmin, xmax) %>%
+  mutate(counts = 1) %>% 
+  add_epred_draws(fit, re_formula = NA) %>% 
+  group_by(temp_treat, nutrient_treat, xmin, xmax) %>% 
+  median_qi(.epred)
+
+fit$data %>% 
+  group_by(temp_treat, nutrient_treat) %>% 
+  mutate(xmin = min(dw_mg),
+         xmax = max(dw_mg)) %>% 
+  mutate(trt = paste0(temp_treat, "_", nutrient_treat)) %>% 
+  distinct(temp_treat, nutrient_treat, xmin, xmax, trt) %>%
+  mutate(counts = 1) %>% 
+  add_epred_draws(fit, re_formula = NA) %>% 
+  ungroup %>% 
+  select(trt, .epred, .draw) %>% 
+  pivot_wider(names_from = trt, values_from = .epred) %>% 
+  mutate(diff1 = heated_ambient - ambient_ambient,
+         diff2 = heated_ambient - ambient_nutrient,
+         diff3 = heated_ambient - heated_nutrient) %>% 
+  select(.draw, starts_with("diff")) %>% 
+  pivot_longer(cols = -.draw) %>% 
+  group_by(name) %>% 
+  reframe(prob_diff = sum(value>0)/max(.draw))
+
+
 fit_posts_list = fit_posts %>% group_by(temp_treat, nutrient_treat, xmin, xmax, tank) %>% 
   group_split()
 
@@ -77,7 +105,6 @@ isd_plot_data = dw %>%
          correct_taxon = paste0(max_size, "_", correct_taxon)) %>% 
   left_join(group_ids)
          
-  
 isd_panel_plot = isd_plot_data %>% 
   ggplot(aes(x = dw_mg, group = tank)) +
   geom_point(aes(size = dw_mg, 
@@ -107,6 +134,43 @@ isd_panel_plot = isd_plot_data %>%
 
 ggview::ggview(isd_panel_plot, width = 7.5, height = 7)
 ggsave(isd_panel_plot, file = "plots/isd_panel_plot.jpg", width = 7.5, height = 7)
+
+
+id_keep = 1
+four_isds = isd_plot_data %>% 
+  filter(id == id_keep) %>% 
+  separate(correct_taxon, into = c("delete", "correct_taxon")) %>% 
+  ggplot(aes(x = dw_mg, group = tank)) +
+  geom_point(aes(size = dw_mg, 
+                 y = order,
+                 color = correct_taxon),
+             shape = 16,
+             alpha = 0.5) +
+  scale_x_log10(labels = scales::comma) +
+  scale_y_log10() +
+  facet_wrap(~treatment, nrow = 1, scales = "free") +
+  geom_line(data = isd_posts %>% filter(id == id_keep), aes(y = n_yx)) +
+  geom_ribbon(data = isd_posts %>% filter(id == id_keep), aes(ymin = n_yx_lower, ymax = n_yx_upper),
+              alpha = 0.4) +
+  coord_cartesian(ylim = c(1, NA)) +
+  # scale_color_colorblind() +
+  scale_size_continuous(breaks = c(0.01, 0.1, 1, 10, 30)) +
+  theme_default() +
+  guides(size = "none") +
+  labs(x = "mgDM Individual",
+       size = "mgDM",
+       y = "Number of individuals >= x",
+       color = "") +
+  theme(legend.position = "top",
+        axis.text.x = element_text(size = 7,
+                                   angle = 45,
+                                   hjust = 1),
+        legend.text = element_text(size = 9))
+
+ggview::ggview(four_isds, width = 6.5, height = 3.5)
+ggsave(four_isds, width = 6.5, height = 3.5,
+       file = "plots/four_isds.jpg", dpi = 500)
+
 
 
 

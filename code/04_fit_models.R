@@ -4,7 +4,6 @@ library(tidyverse)
 # 2) install brms via install.packages("brms")
 library(brms) 
 library(isdbayes)
-<<<<<<< HEAD
 library(tidybayes)
 library(ggthemes)
 library(viridis)
@@ -14,33 +13,25 @@ library(viridis)
 dw = readRDS(file = "data/dw_fixed.rds") %>% 
   mutate(tank = as.integer(tank)) %>% 
   filter(correct_taxon != "Daphnia")
-=======
 
 # model isd ---------------------------------------------------------------
 
 dw = readRDS(file = "data/dw_fixed.rds")
->>>>>>> 505ce3cf1f0066d7de966ba229d2bf5a88180f36
 
-fit_nodaphnia = brm(dw_mg| vreal(counts, xmin, xmax) ~ temp_treat*nutrient_treat + (1|tank), 
-          data = dw ,
-          stanvars = stanvars,  # new thing added by the package
-          family = paretocounts(), # new thing added by the package
-          chains = 4, iter = 2000,
-          file = "models/brm_fit_nodaphnia.rds",
-          prior = c(prior(normal(-1.25, 0.2), class = "Intercept"),
-                    prior(normal(0, 0.2), class = "b")))
-
-saveRDS(fit_nodaphnia, file = "models/fit_nodaphnia_tank.rds")
+# fit_nodaphnia = brm(dw_mg| vreal(counts, xmin, xmax) ~ temp_treat*nutrient_treat + (1|tank), 
+#           data = dw ,
+#           stanvars = stanvars,  # new thing added by the package
+#           family = paretocounts(), # new thing added by the package
+#           chains = 4, iter = 2000,
+#           file = "models/brm_fit_nodaphnia.rds",
+#           prior = c(prior(normal(-1.25, 0.2), class = "Intercept"),
+#                     prior(normal(0, 0.2), class = "b")))
+# 
+# saveRDS(fit_nodaphnia, file = "models/fit_nodaphnia_tank.rds")
 
 # check model -------------------------------------------------------------
 
-summary(fit_nodaphnia)
-
-<<<<<<< HEAD
-conditional_effects(fit)
-
-
-saveRDS(fit_daphnia, file = "models/fit_nodaphnia_tank.rds")
+fit_daphnia = readRDS(file = "models/fit_nodaphnia_tank.rds")
 
 
 
@@ -135,9 +126,6 @@ lambda_posts %>%
 
 
 
-
-
-=======
 plot_fit = plot(conditional_effects(fit_nodaphnia, effects = "temp_treat:nutrient_treat"))
 
 saveRDS(plot_fit, file = "plots/plot_fit.rds")
@@ -151,4 +139,3 @@ plot_fit$`temp_treat:nutrient_treat`$data %>%
                  position = position_dodge(width = .2)) +
   labs(y = "asdfasdf") +
   theme_default()
->>>>>>> 505ce3cf1f0066d7de966ba229d2bf5a88180f36
