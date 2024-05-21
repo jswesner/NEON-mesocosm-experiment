@@ -192,34 +192,60 @@ group_mean_posts = fit$data %>%
   mutate(adjust = case_when(nutrient_treat == "ambient" ~ -0.1,
                             TRUE ~ 0.1))
 
+group_medians  = group_mean_posts %>% 
+  group_by(temp_treat, nutrient_treat, new_x, adjust) %>% 
+  median_qi(.epred)
+
 lambda_plot = epred_posts %>% 
   group_by(temp_treat, nutrient_treat, new_x, adjust, tank) %>% 
   median_qi(.epred) %>% 
   ggplot(aes(x = new_x + adjust, y = .epred)) + 
   stat_halfeye(data = group_mean_posts, aes(y = .epred, fill = nutrient_treat),
                alpha = 0.6) +
-  # geom_pointinterval(aes(y = .epred, ymin = .lower, ymax = .upper,
-  #                        group = interaction(tank, temp_treat, nutrient_treat)),
-  #                    position = position_jitter(width = 0.005),
-  #                    linewidth = 0.2,
-  #                    color = "gray60") + 
   geom_point(aes(y = .epred),
              shape = 21,
              size = 1) +
+  geom_line(data = group_medians, aes(group = nutrient_treat)) +
   scale_x_continuous(breaks = c(1, 2),
                      labels = c("ambient", "heated")) + 
   labs(x = "Heat",
        y = "\u03bb") +
-  scale_fill_colorblind() +
+  scale_fill_manual(values = c("#cae2ee", "#79add2")) +
   theme_default() +
-  labs(fill = "Nutrients")
+  labs(fill = "Nutrients") +
+  theme(text = element_text(size = 20),
+        legend.position = c(0.2, 0.9))
 
 
-ggview::ggview(lambda_plot, width = 6, height = 4)
-ggsave(lambda_plot, file = "plots/lambda_plot.jpg", width = 6, height = 4)
+ggview::ggview(lambda_plot, width = 6, height = 5)
+ggsave(lambda_plot, file = "plots/lambda_plot.jpg", width = 6, height = 5)
 
 
+# hypotheses
 
+hypothesis = group_mean_posts %>%
+  group_by(temp_treat, nutrient_treat) %>% 
+  mutate(medians = median(.epred)) %>% 
+  mutate(target = case_when(nutrient_treat == "nutrient" ~ -0.9,
+                            nutrient_treat == "nutrient" | temp_treat == "ambient" ~ -0.9,
+                            TRUE ~ -1.1)) %>% 
+  mutate(adjustment = target - medians) %>% 
+  mutate(.epred = .epred + adjustment) %>% 
+  ggplot(aes(x = new_x + adjust, y = .epred)) + 
+  stat_halfeye(aes(y = .epred, fill = nutrient_treat),
+               alpha = 0.6) +
+  geom_line(data = . %>% group_by(temp_treat, nutrient_treat, new_x, adjust) %>% median_qi(.epred), aes(group = nutrient_treat)) +
+  scale_x_continuous(breaks = c(1, 2),
+                     labels = c("ambient", "heated")) + 
+  labs(x = "Heat",
+       y = "\u03bb") +
+  scale_fill_manual(values = c("#cae2ee", "#79add2")) +
+  theme_default() +
+  labs(fill = "Nutrients") +
+  theme(text = element_text(size = 20),
+        legend.position = c(0.15, 0.9))
+
+ggsave(hypothesis, file = "plots/hypothesis.jpg", width = 6, height = 5)
 
 
 
