@@ -10,7 +10,7 @@ library(rstan)
 library(purrr)
 rstan::rstan_options(auto_write = TRUE)
 options(mc.cores = parallel::detectCores()-1)
-source("./code/metabolism_functions.R")
+source("./code/old/metabolism_functions.R")
 '%ni%' <- Negate('%in%')
 # library(rnoaa)
 # library(rwunderground)
@@ -20,10 +20,10 @@ o2_data = read.csv(file = "./data/o2_temp.csv", TRUE) %>%
   dplyr::mutate(date_time = as.POSIXct(date_time, format = "%Y-%m-%dT%H:%M:%SZ", tz = "America/Chicago"))
 
 temp_data = read.csv(file = "./data/temperature.csv", TRUE) %>%
-  dplyr::mutate(date_time = as.POSIXct(paste0(date," ",paste0(time,":00")), format = "%Y-%m-%d %H:%M:%S", tz = "America/Chicago")) %>%
-  dplyr::select(tank, date_time, temp_deg_f, ysi_temp = "temp_from_ysi_deg_c") %>%
-  dplyr::mutate(temp = F_to_C(fahr = temp_deg_f)) %>%
-  dplyr::mutate(temp_c = if_else(is.na(temp), ysi_temp, temp))
+  dplyr::mutate(date = as.Date(date, format = "%m/%d/%Y"),
+    date_time = as.POSIXct(paste0(date," ",paste0(time,":00")), format = "%Y-%m-%d %H:%M:%S", tz = "America/Chicago")) %>%
+  dplyr::select(tank, date_time, temp_deg_f) %>%
+  dplyr::mutate(temp_c = F_to_C(fahr = temp_deg_f)) 
 
 # split into list and merge temps to fill in holes
 o2_data_tanks = o2_data %>%
