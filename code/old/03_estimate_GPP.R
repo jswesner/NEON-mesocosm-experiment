@@ -1,6 +1,6 @@
 # Load o2 data and combine with metadata
 
-source("./code/02_clean_data.R")
+source("./code/old/02_clean_data.R")
 #### 02_clean_data.R loads: #####
 # `exp_data` = the o2 and temperature data and metadata
 # `grp1_dates` = the dates in the first sampling
@@ -62,7 +62,7 @@ dusk_dawnMetEstimates %>%
   scale_x_discrete(name = "Temperature treatment")+
   scale_y_continuous(name = expression("Net production ( mg"~O[2]~L^-1~hr^-1~")"),
                      expand = c(0.01,0.01))+
-  theme(legend.position = c(1,1),
+  theme(legend.position.inside = c(1,1),
         legend.justification = c(1,1))
 
 # create boxplot of 
@@ -122,7 +122,7 @@ tank1_1 %>%
 
 
 o2_form = brms::bf(o2_do_mg_l ~ s(date_time, bs = 'tp') + fcov(v.o2),
-                   data = tank1)
+                   data = tank1_1)
 
 tankList = exp_data %>% ungroup %>% named_group_split(tank) %>% purrr::map(~.x %>% named_group_split(run))
 
@@ -148,7 +148,7 @@ tankNameList = exp_data %>% dplyr::select(tank, run) %>%
 metabFiles = list.files("./data/models",".*bayes.*.rds", full.names = TRUE)
 
 ## Extract the summaries and relevant plots ----
-expMetab = metabFiles %>% purrr::map(~extract_metab(metabModel = .x) %>% pluck('summary')) %>%
+expMetab = metabFiles %>% purrr::map(~extract_metab(metabModel = .x)) %>%
   bind_rows %>%
   dplyr::mutate(tankMod = as.numeric(gsub("t(\\d{1,2})_\\d{1}","\\1", tank)),
                 run = gsub("t\\d{1,2}_(\\d{1})","\\1", tank)) %>%
