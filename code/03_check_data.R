@@ -19,11 +19,17 @@ dw_raw %>%
 
 # filter obvious outliers (anything else to add?)
 dw_fixed = dw_raw %>% 
+  filter(length_mm < 50) %>%
   filter(dw_mg < 200) %>%
   group_by(tank) %>%
   mutate(xmin = min(dw_mg, na.rm = T),
          xmax = max(dw_mg, na.rm = T),
-         counts = 1) 
+         counts = 1) %>% 
+  mutate(correct_taxon = case_when(correct_taxon == "Dytiscidae" ~ "Coleoptera",
+                                   correct_taxon == "Ceratopogonidae" ~ "Diptera",
+                                   TRUE ~ correct_taxon)) %>% 
+  filter(correct_taxon != "Trichoptera") # there was only one identified. I checked pics on 4/6/2025. No trichoptera were in the samples. Don't know which one this was, so just removed it
+
 
 write_csv(dw_fixed, file = "data/dw_fixed.csv")
 saveRDS(dw_fixed, file = "data/dw_fixed.rds")

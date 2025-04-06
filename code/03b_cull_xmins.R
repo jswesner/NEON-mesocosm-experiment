@@ -1,30 +1,60 @@
+library(poweRlaw)
 library(tidyverse)
-dw_fixed = readRDS(file = "data/dw_fixed.rds")
 
-dw_culled = dw_fixed %>% 
-  # filter(dw_mg>0) %>% 
-  mutate(log2_bins = cut(log2(dw_mg), breaks = 7)) %>% 
-  group_by(log2_bins, tank)  %>%
-  tally() %>% 
-  separate(log2_bins, into = c("min", "max"), sep = ",", remove = F) %>% 
-  mutate(min = 2^parse_number(min),
-         max = 2^parse_number(max))
+dat = readRDS(file = "data/dw_fixed.rds")
 
-dw_culled %>% 
-  ggplot(aes(x = min, y = n)) + 
-  geom_point() +
-  facet_wrap(~tank, scales = "free") +
-  scale_x_log10()
+# this method follows Clauset et al. 2009 by estimating the minimum
+# size for which the data follow a power law using by minimising the K-S statistic.
+# i.e., xmin is model-based
 
-dw_newxmins = dw_culled %>% group_by(tank) %>% 
-  filter(n == max(n)) %>% 
-  filter(min == max(min)) %>% 
-  distinct(tank, min) %>% 
-  rename(newxmin_cutoff = min)
+# load data
+dat_list = dat %>% group_by(tank) %>% group_split()
 
-dw_new = dw_fixed %>% left_join(dw_newxmins) %>% filter(dw_mg >= newxmin_cutoff) %>% 
+xmin_list = list()
+
+
+for(i in 1:length(dat_list)){
+  powerlaw = conpl$new(dat_list[[i]]$dw_mg)
+  xmin_list[[i]] = tibble(xmin_clauset = estimate_xmin(powerlaw)$xmin,
+                          tank = unique(dat_list[[i]]$tank))
+}
+
+xmins_clauset = bind_rows(xmin_list)
+
+dat_clauset_xmins = dat %>% left_join(xmins_clauset) %>% 
   group_by(tank) %>% 
-  mutate(xmin = min(dw_mg),
+  filter(dw_mg >= xmin_clauset) %>%
+  mutate(xmin = xmin_clauset,
          xmax = max(dw_mg))
 
-saveRDS(dw_new, file = "data/dw_new.rds")
+saveRDS(dat_clauset_xmins, file = "data/dat_clauset_xmins.rds")
+
+
+
+# No zooplankton ----------------------------------------------------------
+
+# load data
+dat_list = dat %>% 
+  filter(correct_taxon != "Daphnia") %>% 
+  group_by(tank) %>% group_split()
+
+xmin_list = list()
+
+for(i in 1:length(dat_list)){
+  powerlaw = conpl$new(dat_list[[i]]$dw_mg)
+  xmin_list[[i]] = tibble(xmin_clauset = estimate_xmin(powerlaw)$xmin,
+                          tank = unique(dat_list[[i]]$tank))
+}
+
+xmins_clauset = bind_rows(xmin_list)
+
+dat_clauset_xmins_nozoo = dat %>% 
+  filter(correct_taxon != "Daphnia") %>% 
+  left_join(xmins_clauset) %>% 
+  group_by(tank) %>% 
+  filter(dw_mg >= xmin_clauset) %>%
+  mutate(xmin = xmin_clauset,
+         xmax = max(dw_mg))
+
+saveRDS(dat_clauset_xmins_nozoo, file = "data/dat_clauset_xmins_nozoo.rds")
+
