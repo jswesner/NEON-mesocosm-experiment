@@ -67,11 +67,11 @@ plot_epreds = post_dots %>%
             aes(group = .draw, color = nut_plus),
             alpha =0.01) +
   guides(color = "none") +
-  labs(x = "Nutrients",
+  labs(x = "",
        y = "\u03bb") +
   NULL
 
-ggsave(plot_epreds, file = "plots/plot_epreds.jpg", width = 6, height = 4, dpi = 400)
+ggsave(plot_epreds, file = "plots/plot_epreds.jpg", width = 4.5, height = 3, dpi = 400)
 
 
 # summaries ---------------------------------------------------------------
@@ -112,6 +112,24 @@ post_lines %>%
   select(-ends_with("plus")) %>% 
   pivot_wider(names_from = nutrient_treat, values_from = .epred) %>% 
   mutate(diff = nutrient - ambient) %>% 
+  select(temp_treat, .draw, diff) %>% 
+  pivot_wider(names_from = temp_treat, values_from = diff) %>% 
+  mutate(diff = heated - ambient) %>% 
+  median_qi(diff)
+
+post_lines %>% 
+  select(-ends_with("plus")) %>% 
+  pivot_wider(names_from = nutrient_treat, values_from = .epred) %>% 
+  mutate(diff = nutrient - ambient) %>% 
+  select(temp_treat, .draw, diff) %>% 
+  pivot_wider(names_from = temp_treat, values_from = diff) %>% 
+  mutate(diff = heated - ambient) %>% 
+  reframe(prob_greater = sum(diff > 0)/max(.draw))
+
+post_lines %>% 
+  select(-ends_with("plus")) %>% 
+  pivot_wider(names_from = nutrient_treat, values_from = .epred) %>% 
+  mutate(diff = nutrient - ambient) %>% 
   select(-ambient, -nutrient) %>% 
   pivot_wider(names_from = temp_treat, values_from = diff) %>% 
   mutate(diff_interaction = heated - ambient) %>% 
@@ -138,3 +156,10 @@ post_lines %>%
   mutate(diff = heated - ambient) %>% 
   group_by(nutrient_treat) %>% 
   median_qi(diff)
+
+post_lines %>% 
+  select(-ends_with("plus")) %>% 
+  pivot_wider(names_from = temp_treat, values_from = .epred) %>% 
+  mutate(diff = heated - ambient) %>% 
+  group_by(nutrient_treat) %>% 
+  reframe(prob_greater = sum(diff > 0)/max(.draw))

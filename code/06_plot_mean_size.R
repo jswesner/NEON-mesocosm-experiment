@@ -9,7 +9,7 @@ theme_set(theme_default())
 # larvae ------------------------------------------------------------------
 
 # brm_mean_larvae = readRDS(file = "models/brm_mean_larvae_rawdata_lognorm.rds")
-brm_mean_larvae = readRDS(file = "models/brm_larvae_gamma.rds")
+brm_mean_larvae = readRDS(file = "models/brm_mean_larvae.rds")
 treatments = readRDS("data/treatments.rds") 
 
 dat = brm_mean_larvae$data %>% 
@@ -35,24 +35,7 @@ post_trt %>%
   scale_color_colorblind() + 
   NULL
 
-post_trt %>%
-  ggplot(aes(x = nut_plus, y = .epred)) +
-  geom_jitter(data = dat, aes(y = dw_mg),
-             shape = ".",
-             width = 0.1,
-             color = "grey50") +
-  # geom_line(data = post_trt %>% filter(.draw <= 1000),
-  #           aes(group = .draw, color = nut_plus),
-  #           alpha =0.01) +
-  stat_pointinterval(aes(color = nut_plus)) +
-  scale_color_colorblind() +
-  scale_fill_colorblind() +
-  # scale_y_log10() +
-  facet_wrap(~temp_plus) +
-  guides(color = "none") +
-  labs(x = "Nutrients",
-       y = "\u03bb") +
-  NULL
+
 
 plot_larval_mean_size = post_trt %>%
   ggplot(aes(x = .epred, y = temp_nut_plus)) +
@@ -129,7 +112,7 @@ plot_adult_mean_size = post_trt_adults %>%
                alpha = 0.6, linewidth = 0.2) +
   scale_color_colorblind() +
   scale_fill_colorblind() +
-  facet_wrap(~temp_nut_plus, nrow = 1) +
+  facet_grid(nut_plus ~ temp_plus) +
   # scale_y_log10() +
   guides(color = "none",
          fill = "none") +
@@ -142,10 +125,13 @@ plot_adult_mean_size = post_trt_adults %>%
 library(cowplot)
 
 plot_individual_size =  plot_grid(
-  (plot_adult_mean_size + labs(subtitle = "a) Adults")),(plot_larval_mean_size + labs(subtitle = "b) Larvae")),
-  ncol = 1)
+  (plot_adult_mean_size + labs(subtitle = "a) Adults") + theme(text = element_text(size = 8),
+                                                               title = element_text(size = 9))),
+   (plot_larval_mean_size + labs(subtitle = "b) Larvae")+ theme(text = element_text(size = 8),
+                                                                title = element_text(size = 9))),
+  ncol = 1, rel_heights = c(1, 0.6))
 
-ggsave(plot_individual_size, file = "plots/plot_individual_size.jpg", width = 6.5, height = 6,
+ggsave(plot_individual_size, file = "plots/plot_individual_size.jpg", width = 5, height = 8,
        dpi = 400)
 
 

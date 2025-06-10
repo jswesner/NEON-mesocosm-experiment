@@ -6,9 +6,9 @@ library(poweRlaw)
 # model isd ---------------------------------------------------------------
 
 # dw = readRDS(dw_fixed, file = "data/dw_fixed.rds") # old data without corrected xmins
-dw_new = readRDS(file = "data/dat_clauset_xmins.rds") # xmins are corrected using mlebin method
+dw_new = readRDS(file = "data/dat_clauset_xmins.rds") # xmins are corrected using clauset method
 
-fit_isd = readRDS("models/fit_isd.rds")
+fit_isd = readRDS("models/fit_isd_clauset.rds")
 
 # fit_isd = brm(dw_mg| vreal(counts, xmin, xmax) ~ temp_treat*nutrient_treat + 
 #                 (1|tank), 
@@ -17,21 +17,10 @@ fit_isd = readRDS("models/fit_isd.rds")
 #           family = paretocounts(),
 #           chains = 1, iter = 1000,
 #           # file = "models/fit_isd.rds",
-#           prior = c(prior(normal(-1.6, 0.5), class = "Intercept"),
+#           prior = c(prior(normal(-2, 0.5), class = "Intercept"),
 #                     prior(normal(0, 0.2), class = "b")))
 
-fit_isd = update(fit_isd, newdata = dw_new)
-
 saveRDS(fit_isd, file = "models/fit_isd_clauset.rds")
-
-# fit temp or nutrients only
-fit_isd = readRDS("models/fit_isd.rds")
-fit_isd_temponly = update(fit_isd, newdata = dw_new, formula = . ~ temp_treat + (1|tank))
-saveRDS(fit_isd_temponly, file = "models/fit_isd_temponly.rds")
-
-fit_isd_nutrientonly = update(fit_isd, newdata = dw_new, formula = . ~ nutrient_treat + (1|tank))
-saveRDS(fit_isd_nutrientonly, file = "models/fit_isd_nutrientonly.rds")
-
 
 # model without zoops -----------------------------------------------------
 
@@ -56,11 +45,11 @@ fit_isd = readRDS("models/fit_isd_clauset.rds")
 #           prior = c(prior(normal(-1.6, 0.5), class = "Intercept"),
 #                     prior(normal(0, 0.2), class = "b")))
 
-fit_isd_emerge_clauset = update(fit_isd, newdata = dat_clauset_xmins_emerge)
+# fit_isd_emerge_clauset = update(fit_isd, newdata = dat_clauset_xmins_emerge)
 
-saveRDS(fit_isd_emerge_clauset, file = "models/fit_isd_emerge_clauset.rds")
+# saveRDS(fit_isd_emerge_clauset, file = "models/fit_isd_emerge_clauset.rds")
 
-
+# fit_isd_emerge_clauset = readRDS(file = "models/fit_isd_emerge_clauset.rds")
 
 # test power law ----------------------------------------------------------
 dat = readRDS(file = "data/dw_fixed.rds")
@@ -107,6 +96,7 @@ saveRDS(ks_stats, file = "models/ks_stats.rds")
 # fit mean size -----------------------------------------------------------
 dat = readRDS(file = "data/dw_fixed.rds") 
 
+
 tibble(sim_mg = rgamma(500, shape = 0.03, scale = 10)) %>% 
   ggplot(aes(x = 1, y = sim_mg)) +
   geom_jitter()
@@ -130,9 +120,9 @@ shape
 
 # saveRDS(test_larvae, file = "models/test_larvae.rds")
 
-brm_mean_larvae = readRDS(file = "models/temp/test_larvae_gamma.rds")
+brm_mean_larvae = readRDS(file = "models/brm_mean_larvae.rds")
 
-brm_mean_larvae = update(brm_mean_larvae, chains = 1, iter = 100, newdata = dat)
+brm_mean_larvae = update(brm_mean_larvae, chains = 1, iter = 500, newdata = dat)
 
 # fit gpp -----------------------------------------------------------------
 
