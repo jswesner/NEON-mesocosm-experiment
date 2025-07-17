@@ -131,7 +131,7 @@ plot_individual_size =  plot_grid(
                                                                 title = element_text(size = 9))),
   ncol = 1, rel_heights = c(1, 0.6))
 
-ggsave(plot_individual_size, file = "plots/plot_individual_size.jpg", width = 5, height = 8,
+ggsave(plot_individual_size, file = "plots/plot_individual_size.jpg", width = 4, height = 6,
        dpi = 400)
 
 

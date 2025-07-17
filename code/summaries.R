@@ -6,8 +6,8 @@ library(tidybayes)
 library(flextable)
 
 # load models
-fit_isd = readRDS("models/fit_isd_clauset.rds")
-brm_mean_larvae = readRDS(file = "models/brm_mean_larvae_rawdata_lognorm.rds")
+fit_isd = readRDS("models/fit_isd_newprior.rds")
+brm_mean_larvae = readRDS(file = "models/brm_mean_larvae.rds")
 
 # load raw (unculled) data
 dat = readRDS(file = "data/dw_fixed.rds") %>% ungroup
@@ -68,12 +68,22 @@ as_draws_df(fit_isd) %>%
 
 
 fit_isd$data %>% 
+  select(-dw_mg, -tank, -xmin, -xmax) %>% 
+  mutate(xmin = min(fit_isd$data$xmin),
+         xmax = max(fit_isd$data$xmax)) %>% 
+  distinct() %>% 
+  add_epred_draws(fit_isd, re_formula = NA) %>% 
+  group_by(.draw) %>% 
+  reframe(.epred = mean(.epred)) %>% 
+  median_qi(.epred)
+
+fit_isd$data %>% 
   select(-dw_mg) %>% 
   distinct() %>% 
   add_epred_draws(fit_isd, re_formula = NULL) %>% 
   group_by(tank) %>% 
   median_qi(.epred) %>% 
-  arrange(.epred)
+  arrange(-.epred)
 
 fit_isd$data %>% 
   select(-dw_mg, -tank, -counts, xmin, xmax) %>% 
@@ -147,14 +157,13 @@ fit_isd$data %>%
 
 # mean sizes --------------------------------------------------------------
 
-brm_mean_larvae = readRDS(file = "models/brm_mean_larvae_rawdata_lognorm.rds")
+brm_mean_larvae = readRDS(file = "models/brm_mean_larvae.rds")
 
 size_posts = brm_mean_larvae$data %>% distinct(temp_treat, nutrient_treat) %>%
   mutate(temp_plus = case_when(temp_treat == "heated" ~ "+heat", T ~ "-heat"),
          nut_plus = case_when(nutrient_treat == "ambient" ~ "-nutrients", T ~ "+nutrients"),
          temp_nut_plus = paste0(temp_plus, " | ", nut_plus)) %>% 
-  add_linpred_draws(brm_mean_larvae, re_formula = NA) %>% 
-  mutate(.epred = exp(.linpred))
+  add_epred_draws(brm_mean_larvae, re_formula = NA) 
 
 size_medians = size_posts %>% 
   group_by(temp_plus, nut_plus) %>% 
