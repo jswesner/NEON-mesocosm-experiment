@@ -6,11 +6,17 @@ library(tidybayes)
 library(flextable)
 
 # load models
-fit_isd = readRDS("models/fit_isd_newprior.rds")
-brm_mean_larvae = readRDS(file = "models/brm_mean_larvae.rds")
+fit_isd = readRDS("models/fit_isd_morin_gpp_predictor.rds")
 
 # load raw (unculled) data
-dat = readRDS(file = "data/dw_fixed.rds") %>% ungroup
+dat = readRDS(file = "data/dw_fixed.rds") %>% 
+  filter(dw_mg > 0) %>% 
+  group_by(tank) %>% 
+  mutate(xmin = min(dw_mg),
+         xmax = max(dw_mg)) %>% 
+  filter(correct_taxon != "Daphnia") %>% 
+  ungroup
+
 lengths_fixed <- read_csv("data/lengths_fixed.csv")
 
 size_table = dat %>% 
@@ -31,12 +37,26 @@ size_table = dat %>%
           min_size = min(dat$dw_mg),
           median_size = median(dat$dw_mg),
           max_size = max(dat$dw_mg)) %>% 
-  select(correct_taxon2, n, everything())
+  select(correct_taxon2, n, everything()) |> 
+  mutate(biomass = n*median_size)
 
 saveRDS(size_table, file = "tables/size_table.rds")
+write_csv(size_table, file = 'tables/size_table.csv')
+
+size_table |>
+  filter(correct_taxon2 != 'Overall') |> 
+  mutate(prop_abund = n/sum(n),
+         prop_biomass = biomass/sum(biomass))
 
 # taxa and dragons -------------------------------------------------------------------------
-dat = readRDS(file = "data/dw_fixed.rds") %>% ungroup
+dat = readRDS(file = "data/dw_fixed.rds") %>%
+  filter(correct_taxon != "Daphnia") %>%  
+  filter(dw_mg > 0) %>% 
+  group_by(tank) %>% 
+  mutate(xmin = min(dw_mg),
+         xmax = max(dw_mg)) %>% 
+  filter(correct_taxon != "Daphnia") %>% 
+  ungroup()
 
 dat %>% 
   group_by(temp_treat, nutrient_treat, correct_taxon, tank) %>%
@@ -51,133 +71,45 @@ dat %>%
   median_qi(dw_mg) %>% 
   arrange(temp_treat)
 
-emergence = readRDS(file = "data/emergence_wrangled.rds")
+# plot temperature effect on gpp ----------------------------------------------------
+treatments = readRDS("data/treatments.rds")
 
-emergence
+d = fit_isd$data2 |> 
+  left_join(treatments |> distinct(temp_treat, temp_plus, nutrient_treat, nut_plus)) |> 
+  ungroup()
 
+days = tibble(date = c("2022-06-22", "2022-06-28"),
+              name = c("june_22_gpp", "june_28_gpp"),
+              day_of_experiment = paste("Day", julian(as.Date(date)) - julian(as.Date("2022-05-27"))))
 
+gpp_temp = d  |> 
+  distinct(tank, june_28_gpp, june_22_gpp, temp_plus) |> 
+  pivot_longer(cols = starts_with("june_")) |>
+  left_join(days |> select(-date)) |> 
+  ggplot(aes(x = temp_plus, y = value, color = temp_plus)) +
+  geom_boxplot(aes(width = 0.3)) +
+  geom_point() +
+  labs(y = expression("Gross production ( mg"~O[2]~L^-1~d^-1~") - Day 32")) +
+  facet_wrap(~day_of_experiment) +
+  guides(color = "none") +
+  scale_color_colorblind()
 
-# isd ---------------------------------------------------------------------
-as_draws_df(fit_isd) %>% 
-  clean_names() %>% 
-  select(starts_with("b_")) %>%
-  mutate(.draw = row_number()) %>% 
-  pivot_longer(cols = -.draw) %>% 
-  group_by(name) %>% 
-  reframe(prob = sum(value>0)/max(.draw))
-
-
-fit_isd$data %>% 
-  select(-dw_mg, -tank, -xmin, -xmax) %>% 
-  mutate(xmin = min(fit_isd$data$xmin),
-         xmax = max(fit_isd$data$xmax)) %>% 
-  distinct() %>% 
-  add_epred_draws(fit_isd, re_formula = NA) %>% 
-  group_by(.draw) %>% 
-  reframe(.epred = mean(.epred)) %>% 
-  median_qi(.epred)
-
-fit_isd$data %>% 
-  select(-dw_mg) %>% 
-  distinct() %>% 
-  add_epred_draws(fit_isd, re_formula = NULL) %>% 
-  group_by(tank) %>% 
-  median_qi(.epred) %>% 
-  arrange(-.epred)
-
-fit_isd$data %>% 
-  select(-dw_mg, -tank, -counts, xmin, xmax) %>% 
-  mutate(counts = 1,
-         xmin = min(fit_isd$data$xmin),
-         xmax = max(fit_isd$data$xmax)) %>% 
-  distinct() %>% 
-  add_epred_draws(fit_isd, re_formula = NA) %>% 
-  ungroup %>% 
-  select(-.row, -.chain, -.iteration, -xmin, -xmax, -counts) %>%
-  pivot_wider(names_from = temp_treat, values_from = .epred) %>% 
-  mutate(diff = (heated - ambient)) %>% 
-  group_by(nutrient_treat) %>% 
-  median_qi(diff)
-
-fit_isd$data %>% 
-  select(-dw_mg, -tank, -counts, xmin, xmax) %>% 
-  mutate(counts = 1,
-         xmin = min(fit_isd$data$xmin),
-         xmax = max(fit_isd$data$xmax)) %>% 
-  distinct() %>% 
-  add_epred_draws(fit_isd, re_formula = NA) %>% 
-  ungroup %>% 
-  select(-.row, -.chain, -.iteration, -xmin, -xmax, -counts) %>%
-  pivot_wider(names_from = nutrient_treat, values_from = .epred) %>% 
-  mutate(diff = (nutrient - ambient)) %>% 
-  group_by(temp_treat) %>% 
-  median_qi(diff)
-
-fit_isd$data %>% 
-  select(-dw_mg, -tank, -counts, xmin, xmax) %>% 
-  mutate(counts = 1,
-         xmin = min(fit_isd$data$xmin),
-         xmax = max(fit_isd$data$xmax)) %>% 
-  distinct() %>% 
-  add_epred_draws(fit_isd, re_formula = NA) %>% 
-  ungroup %>% 
-  select(-.row, -.chain, -.iteration, -xmin, -xmax, -counts) %>%
-  pivot_wider(names_from = temp_treat, values_from = .epred) %>% 
-  mutate(diff = (heated - ambient)) %>% 
-  group_by(nutrient_treat) %>% 
-  reframe(prob = sum(diff>0)/max(.draw))
-
-fit_isd$data %>% 
-  select(-dw_mg, -tank, -counts, xmin, xmax) %>% 
-  mutate(counts = 1,
-         xmin = min(fit_isd$data$xmin),
-         xmax = max(fit_isd$data$xmax)) %>% 
-  distinct() %>% 
-  add_epred_draws(fit_isd, re_formula = NA) %>% 
-  ungroup %>% 
-  select(-.row, -.chain, -.iteration, -xmin, -xmax, -counts) %>%
-  pivot_wider(names_from = nutrient_treat, values_from = .epred) %>% 
-  mutate(diff = (nutrient - ambient)) %>% 
-  group_by(temp_treat) %>% 
-  reframe(prob = sum(diff>0)/max(.draw))
-
-fit_isd$data %>% 
-  select(-dw_mg, -tank, -counts, xmin, xmax) %>% 
-  mutate(counts = 1,
-         xmin = min(fit_isd$data$xmin),
-         xmax = max(fit_isd$data$xmax)) %>% 
-  distinct() %>% 
-  add_epred_draws(fit_isd, re_formula = NA) %>% 
-  ungroup %>% 
-  select(-.row, -.chain, -.iteration, -xmin, -xmax, -counts) %>%
-  group_by(nutrient_treat, temp_treat) %>% 
-  median_qi(.epred)
+ggsave(gpp_temp, file = "plots/gpp_temp.jpg", width = 5, height = 5)
 
 
+# plot gpp correlation ----------------------------------------------------
 
-# mean sizes --------------------------------------------------------------
+days = tibble(date = c("2022-06-22", "2022-06-28"),
+              day_of_experiment = julian(as.Date(date)) - julian(as.Date("2022-05-27")))
 
-brm_mean_larvae = readRDS(file = "models/brm_mean_larvae.rds")
+gpp_correlation = fit_isd$data2 |> 
+  distinct(tank, june_28_gpp, june_22_gpp) |> 
+  ggplot(aes(x = june_22_gpp, y = june_28_gpp)) +
+  geom_point() +
+  labs(x = expression("Gross production ( mg"~O[2]~L^-1~d^-1~") - Day 26"),
+       y = expression("Gross production ( mg"~O[2]~L^-1~d^-1~") - Day 32")) +
+  xlim(0, 70) +
+  ylim(0, 70) +
+  geom_abline(linetype = "dashed")
 
-size_posts = brm_mean_larvae$data %>% distinct(temp_treat, nutrient_treat) %>%
-  mutate(temp_plus = case_when(temp_treat == "heated" ~ "+heat", T ~ "-heat"),
-         nut_plus = case_when(nutrient_treat == "ambient" ~ "-nutrients", T ~ "+nutrients"),
-         temp_nut_plus = paste0(temp_plus, " | ", nut_plus)) %>% 
-  add_epred_draws(brm_mean_larvae, re_formula = NA) 
-
-size_medians = size_posts %>% 
-  group_by(temp_plus, nut_plus) %>% 
-  median_qi(.epred)  %>%
-  select(-.width, -.point, -.interval) %>% 
-  janitor::adorn_rounding(digits = 2, rounding = "half up")
-
-saveRDS(size_medians, "tables/size_medians.rds")
-
-flextable(size_medians) %>% 
-  set_header_labels(temp_plus = "Temperature",
-                    nut_plus = "Nutrients",
-                    .epred = "Median",
-                    .lower = "Low95", 
-                    .upper = "Upper95")
-
-
+ggsave(gpp_correlation, file = "plots/gpp_correlation.jpg", width = 5, height = 5)

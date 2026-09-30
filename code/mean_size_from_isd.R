@@ -7,9 +7,11 @@ theme_set(theme_default())
 
 # load model
 fit_isd = readRDS("models/fit_isd_clauset.rds")
-# load raw (unculled) data
-dat = readRDS(file = "data/dw_fixed.rds") %>% ungroup
 
+# load raw (unculled) data
+dat = readRDS(file = "data/dw_fixed.rds") %>% 
+  filter(correct_taxon != "Daphnia") %>% 
+  ungroup
 
 treatments = fit_isd$data %>% distinct(temp_treat, nutrient_treat) %>% 
   mutate(temp_plus = case_when(temp_treat == "heated" ~ "+heat", T ~ "-heat"),

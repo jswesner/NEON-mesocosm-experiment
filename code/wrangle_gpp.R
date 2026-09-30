@@ -13,16 +13,25 @@ gpp <- lapply(readRDS("data/gppPosteriors.rds"), function(x) x$summary) %>% bind
 saveRDS(gpp, file = "data/gpp_wrangled.rds")
 
 gpp %>% 
-  ggplot(aes(x = interaction(temp_treat, nutrient_treat), y = gpp)) + 
+  ggplot(aes(x = nutrient_treat, y = gpp)) + 
+  geom_point(alpha = 0.4) +
+  facet_wrap(~date)
+
+gpp %>% 
+  ggplot(aes(x = interaction(temp_treat, nutrient_treat), y = r)) + 
   geom_point() +
   facet_wrap(~date)
 
+gpp %>% 
+  ggplot(aes(x = interaction(temp_treat, nutrient_treat), y = nep)) + 
+  geom_point() +
+  facet_wrap(~date)
 
 fit_isd = readRDS("models/fit_isd_clauset.rds")
 
 # no correlation in gpp between tanks and dates (i.e., gpp varied a lot within tanks), so use both dates as predictors
 gpp %>% 
-  select(tank, gpp, nutrient_treat, temp_treat, time) %>% 
+  select(tank, nep, nutrient_treat, temp_treat, time) %>% 
   pivot_wider(names_from = time, values_from = gpp) %>% 
   ggplot(aes(x = `1`, y = `2`)) + 
   geom_point()
