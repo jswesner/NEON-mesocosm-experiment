@@ -1,0 +1,9 @@
+"Table 1: Raw data summary of individual larval sizes by taxon showing the total number of sizes (n) and the min, median, and max size in mg dry mass. ‘Overall’ indicates the total, min, median, or max for measured insects.",,,,
+Taxon,n,Min(mg),Median(mg),Max(mg)
+Diptera,5181,0.0001,0.06,5.46
+Gastropod,102,0.06,1.59,6.60
+Coleoptera,75,0.74,5.96,34.28
+Odonata,20,0.02,0.23,3.98
+Hemiptera,7,0.06,0.70,2.13
+Ephemeroptera,3,0.47,1.25,2.28
+Overall,5388,0.0001,0.07,34.28
