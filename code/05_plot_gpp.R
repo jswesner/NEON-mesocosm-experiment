@@ -4,8 +4,6 @@ library(lubridate)
 library(ggthemes)
 
 treatments = readRDS(file = "data/treatments.rds")
-brm_gpp = readRDS("models/brm_gpp.rds") 
-
 
 gpp_wrangled = readRDS(file = "data/gpp_wrangled.rds") %>% 
   mutate(mean_gpp = mean(gpp, na.rm = T),
