@@ -14,62 +14,59 @@ dat_morin_xmins = readRDS(file = "data/dat_morin_xmins.rds")
 
 fit_isd_gpp_predictor = readRDS(file = "models/fit_isd_morin_gpp_predictor.rds")
 
-# fit_isd_gpp_predictor = update(readRDS(file = "models/fit_isd_morin_gpp_predictor.rds"), newdata = dat_morin_xmins)
-# saveRDS(fit_isd_gpp_predictor, file = "models/fit_isd_morin_gpp_predictor.rds")
+fit_isd_gpp_predictor = update(fit_isd_gpp_predictor, newdata = dat_morin_xmins,
+                               formula = . ~ temp_treat*june_22_gpp_s*june_28_gpp_s + (1|tank),
+                               prior = c(prior(normal(0, 0.2), class = "b"),
+                                         prior(normal(-2, 0.5), class = "Intercept"),
+                                         prior(exponential(2), class = "sd")),
+                               iter = 2000, chains = 4,
+                               data2 = dat_morin_xmins)
 
-# fit_isd_gpp_predictor = update(fit_isd_gpp_predictor, newdata = dat_morin_xmins,
-#                                formula = . ~ temp_treat*june_22_gpp_s*june_28_gpp_s + (1|tank),
-#                                prior = c(prior(normal(0, 0.2), class = "b"),
-#                                          prior(normal(-2, 0.5), class = "Intercept"),
-#                                          prior(exponential(2), class = "sd")),
-#                                iter = 2000, chains = 4,
-#                                data2 = dat_morin_xmins)
-# 
-# saveRDS(fit_isd_gpp_predictor, file = "models/fit_isd_morin_gpp_predictor.rds")
-# 
-# fit_isd_temponly = update(fit_isd_gpp_predictor, newdata = dat_morin_xmins,
-#                                formula = . ~ temp_treat + (1|tank),
-#                                iter = 1000, chains = 1,
-#                                data2 = dat_morin_xmins)
-# 
-# saveRDS(fit_isd_temponly, file = "models/fit_isd_temponly.rds")
-# 
-# fit_isd_interceptonly = update(fit_isd_gpp_predictor, newdata = dat_morin_xmins,
-#                           formula = . ~ 1 + (1|tank),
-#                           iter = 1000, chains = 1,
-#                           data2 = dat_morin_xmins)
-# 
-# saveRDS(fit_isd_interceptonly, file = "models/fit_isd_interceptonly.rds")
-# 
-# 
-# fit_isd_gpp_predictor_additive28th = update(fit_isd_gpp_predictor, newdata = dat_morin_xmins,
-#                                 formula = . ~ temp_treat*june_22_gpp_s + june_28_gpp_s + (1|tank),
-#                                 iter = 1000, chains = 1,
-#                                 data2 = dat_morin_xmins)
-# 
-# saveRDS(fit_isd_gpp_predictor_additive28th, file = "models/fit_isd_morin_gpp_predictor_additive28th.rds")
-# 
-#  
-# fit_isd_gpp_predictor_additive22th = update(fit_isd_gpp_predictor, newdata = dat_morin_xmins,
-#                                             formula = . ~ temp_treat*june_28_gpp_s + june_22_gpp_s + (1|tank),
-#                                             iter = 1000, chains = 1,
-#                                             data2 = dat_morin_xmins)
-# 
-# saveRDS(fit_isd_gpp_predictor_additive22th, file = "models/fit_isd_morin_gpp_predictor_additive22th.rds")
+saveRDS(fit_isd_gpp_predictor, file = "models/fit_isd_morin_gpp_predictor.rds")
 
-# fit_isd_gpp_predictor_28th = update(fit_isd_gpp_predictor, newdata = dat_morin_xmins,
-#                                 formula = . ~ temp_treat*june_28_gpp_s + (1|tank),
-#                                 iter = 2000, chains = 4,
-#                                 data2 = dat_morin_xmins)
-# 
-# saveRDS(fit_isd_gpp_predictor_28th, file = "models/fit_isd_morin_gpp_predictor_28th.rds")
-# 
-# fit_isd_gpp_predictor_22th = update(fit_isd_gpp_predictor, newdata = dat_morin_xmins,
-#                                     formula = . ~ temp_treat*june_22_gpp_s + (1|tank),
-#                                     iter = 2000, chains = 4,
-#                                     data2 = dat_morin_xmins)
-# 
-# saveRDS(fit_isd_gpp_predictor_22th, file = "models/fit_isd_morin_gpp_predictor_22th.rds")
+fit_isd_temponly = update(fit_isd_gpp_predictor, newdata = dat_morin_xmins,
+                               formula = . ~ temp_treat + (1|tank),
+                               iter = 1000, chains = 1,
+                               data2 = dat_morin_xmins)
+
+saveRDS(fit_isd_temponly, file = "models/fit_isd_temponly.rds")
+
+fit_isd_interceptonly = update(fit_isd_gpp_predictor, newdata = dat_morin_xmins,
+                          formula = . ~ 1 + (1|tank),
+                          iter = 1000, chains = 1,
+                          data2 = dat_morin_xmins)
+
+saveRDS(fit_isd_interceptonly, file = "models/fit_isd_interceptonly.rds")
+
+
+fit_isd_gpp_predictor_additive28th = update(fit_isd_gpp_predictor, newdata = dat_morin_xmins,
+                                formula = . ~ temp_treat*june_22_gpp_s + june_28_gpp_s + (1|tank),
+                                iter = 1000, chains = 1,
+                                data2 = dat_morin_xmins)
+
+saveRDS(fit_isd_gpp_predictor_additive28th, file = "models/fit_isd_morin_gpp_predictor_additive28th.rds")
+
+
+fit_isd_gpp_predictor_additive22th = update(fit_isd_gpp_predictor, newdata = dat_morin_xmins,
+                                            formula = . ~ temp_treat*june_28_gpp_s + june_22_gpp_s + (1|tank),
+                                            iter = 1000, chains = 1,
+                                            data2 = dat_morin_xmins)
+
+saveRDS(fit_isd_gpp_predictor_additive22th, file = "models/fit_isd_morin_gpp_predictor_additive22th.rds")
+
+fit_isd_gpp_predictor_28th = update(fit_isd_gpp_predictor, newdata = dat_morin_xmins,
+                                formula = . ~ temp_treat*june_28_gpp_s + (1|tank),
+                                iter = 2000, chains = 4,
+                                data2 = dat_morin_xmins)
+
+saveRDS(fit_isd_gpp_predictor_28th, file = "models/fit_isd_morin_gpp_predictor_28th.rds")
+
+fit_isd_gpp_predictor_22th = update(fit_isd_gpp_predictor, newdata = dat_morin_xmins,
+                                    formula = . ~ temp_treat*june_22_gpp_s + (1|tank),
+                                    iter = 2000, chains = 4,
+                                    data2 = dat_morin_xmins)
+
+saveRDS(fit_isd_gpp_predictor_22th, file = "models/fit_isd_morin_gpp_predictor_22th.rds")
 
 fit_isd_gpp_predictor_nutrient = update(fit_isd_gpp_predictor, newdata = dat_morin_xmins,
                                     formula = . ~ temp_treat*june_22_gpp_s*june_28_gpp_s + nutrient_treat + (1|tank),
